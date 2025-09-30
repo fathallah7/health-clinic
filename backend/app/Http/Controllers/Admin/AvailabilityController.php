@@ -27,13 +27,7 @@ class AvailabilityController extends Controller
     {
         $validated = $request->validated();
 
-        $availability = DoctorAvailability::create([
-            'date' => $validated['date'],
-            'start_time' => $validated['start_time'],
-            'end_time' => $validated['end_time'],
-            'slot_duration' => $validated['slot_duration'],
-        ]);
-
+        $availability = DoctorAvailability::create($validated);
         $this->generateTimeSlots($availability);
 
         return $this->success($availability, 'Availability Created', 200);
@@ -45,7 +39,6 @@ class AvailabilityController extends Controller
         $validated = $request->validated();
 
         $availability->update($validated);
-        
         $availability->timeSlots()->delete();
         $this->generateTimeSlots($availability);
 
