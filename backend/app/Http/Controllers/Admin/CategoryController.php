@@ -3,47 +3,47 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    use ApiResponse;
+
+    // Get All Categories
     public function index()
     {
-        //
+        $categories = Category::all();
+        return $this->success($categories, 'Categories List', 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Create Category
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|min:3|max:255|unique:categories,name',
+            'description' => 'max:255',
+        ]);
+        $category = Category::create($request->all());
+        return $this->success($category, 'Category Created', 200);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    // Update Category
+    public function update(Request $request, Category $category)
     {
-        //
+        $request->validate([
+            "name" => "string|required|min:3|max:255|unique:categories,name,{$category->id}",
+            'description' => 'max:255',
+        ]);
+        $category->update($request->all());
+        return $this->success($category, 'Category Updated', 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    // Delete Category
+    public function destroy(Category $category)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $category->delete();
+        return $this->success(null, 'Category Deleted', 200);
     }
 }
