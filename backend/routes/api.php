@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentControll
 use App\Http\Controllers\Admin\AvailabilityController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\TimeSlotController;
 use App\Http\Controllers\User\AppointmentController;
 use App\Http\Controllers\User\UserTimeSlotController;
 use Illuminate\Support\Facades\Route;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
     // Availabilities
     Route::apiResource('/admin/availability', AvailabilityController::class);
+    // Time Slots
+    Route::apiResource('/admin/time-slot', TimeSlotController::class);
     // Appointments
     Route::apiResource('/admin/appointment', AdminAppointmentController::class);
     // Products

@@ -10,27 +10,12 @@ use Illuminate\Http\Request;
 class AppointmentController extends Controller
 {
     use ApiResponse;
-    
+
+    // Appointments list with patient details
     public function index()
     {
-        Appointment::all();
-        return $this->success(Appointment::all(), 'Appointments retrieved successfully', 200);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        $appointments = Appointment::with('patient')->get();
+        return $this->success($appointments, 'Appointments List', 200);
     }
 
     /**
