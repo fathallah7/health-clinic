@@ -12,4 +12,9 @@ class TimeSlot extends Model
     {
         return $this->belongsTo(DoctorAvailability::class);
     }
+
+    public function appointments()
+    {
+        return $this->hasOne(Appointment::class);
+    }
 }
