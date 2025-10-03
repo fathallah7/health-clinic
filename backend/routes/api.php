@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\TimeSlotController;
 use App\Http\Controllers\User\AppointmentController;
 use App\Http\Controllers\User\UserTimeSlotController;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 // Admin Routes

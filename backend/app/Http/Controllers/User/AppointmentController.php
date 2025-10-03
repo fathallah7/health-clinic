@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Mail\AppointmentConfirmed;
 use App\Models\Appointment;
 use App\Models\TimeSlot;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
 
 class AppointmentController extends Controller
 {
@@ -65,13 +67,15 @@ class AppointmentController extends Controller
             return $this->error($e->getMessage(), [], 422);
         }
 
+        Mail::to($patient->email)->queue(new AppointmentConfirmed($appointment));
+
         return $this->success($appointment, 'Appointment Created', 201);
     }
 
     // Cancel Appointment
     public function destroy(Appointment $appointment)
     {
-        Gate::authorize('delete', $appointment); 
+        Gate::authorize('delete', $appointment);
 
         try {
             DB::transaction(function () use ($appointment) {
