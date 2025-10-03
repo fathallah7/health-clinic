@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Traits\ApiResponse;
-use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
@@ -18,19 +17,11 @@ class AppointmentController extends Controller
         return $this->success($appointments, 'Appointments List', 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    // Delete User's Appointment (also free up the time slot)
+    public function destroy(Appointment $appointment)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $appointment->delete();
+        $appointment->slot()->update(['status' => 'available']);
+        return $this->success(null, 'Appointment deleted successfully', 200);
     }
 }
