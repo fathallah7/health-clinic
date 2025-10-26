@@ -7,7 +7,6 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\TimeSlotController;
 use App\Http\Controllers\User\AppointmentController;
 use App\Http\Controllers\User\UserTimeSlotController;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 // Admin Routes
@@ -24,12 +23,18 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
     Route::apiResource('/admin/category', CategoryController::class);
 });
 
-// Public Routes
+// User Routes
 Route::middleware('auth:sanctum')->group(function () {
     // User Time Slots
     Route::get('/user-time-slot', [UserTimeSlotController::class, 'index']);
     // Appointments
-    Route::apiResource('/appointment', AppointmentController::class);
+    Route::post('/appointment', [AppointmentController::class, 'store']);
+    Route::delete('/appointment/{appointment}', [AppointmentController::class, 'destroy']);
 });
+
+// Public Routes
+Route::get('/time-slot', [AppointmentController::class, 'index']);
+
+
 
 require __DIR__ . '/auth.php';
