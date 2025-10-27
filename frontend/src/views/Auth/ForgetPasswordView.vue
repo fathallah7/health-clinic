@@ -36,7 +36,9 @@ const sendResetLink = async () => {
         <div class="bg-white border border-gray-200 shadow-md rounded-lg p-6 max-w-sm sm:max-w-md w-full">
             <!-- Logo -->
             <div class="flex justify-center mb-6">
-                <img src="../../assets/logo3.webp" alt="Logo" class="h-16" />
+                <div class="p-2 bg-blue-600 rounded-xl">
+                    <i class="fas fa-stethoscope text-white text-3xl"></i>
+                </div>
             </div>
 
             <!-- Heading -->

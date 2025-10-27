@@ -1,6 +1,7 @@
 <script setup>
 import axios from 'axios';
 import { ref, computed, onMounted } from 'vue'
+import { RouterLink } from 'vue-router';
 
 // Navigation
 const navLinks = [
@@ -11,14 +12,6 @@ const navLinks = [
 ]
 
 // Appointments
-// const appointments = ref([
-//     { date: '2025-10-11', time: '10:00 AM', status: 'available' },
-//     { date: '2025-10-11', time: '11:30 AM', status: 'available' },
-//     { date: '2025-10-12', time: '09:00 AM', status: 'available' },
-//     { date: '2025-10-12', time: '02:00 PM', status: 'available' },
-//     { date: '2025-10-13', time: '10:30 AM', status: 'available' },
-//     { date: '2025-10-13', time: '03:00 PM', status: 'available' },
-// ])
 const appointments = ref();
 
 const fetchAppointments = async () => {
@@ -31,26 +24,21 @@ const fetchAppointments = async () => {
     } 
 };
 
-
-onMounted(() => {
-    fetchAppointments();
-});
-
 const formatDate = (dateStr) => {
     const date = new Date(dateStr)
     return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
 }
 
-// const bookAppointment = (i) => {
-//     appointments.value[i].status = 'booked'
-//     alert('Appointment booked successfully!')
-// }
+onMounted(() => {
+    fetchAppointments();
+});
+
 
 // Products
 const products = ref([
-    { id: 1, name: 'Headache Relief', price: 15, image: 'https://via.placeholder.com/300/4F46E5/ffffff?text=Medicine' },
-    { id: 2, name: 'Vitamins Pack', price: 25, image: 'https://via.placeholder.com/300/10B981/ffffff?text=Vitamins' },
-    { id: 3, name: 'Medical Kit', price: 50, image: 'https://via.placeholder.com/300/F59E0B/ffffff?text=Kit' },
+    { id: 1, name: 'Headache Relief', price: 15},
+    { id: 2, name: 'Vitamins Pack', price: 25},
+    { id: 3, name: 'Medical Kit', price: 50},
 ])
 
 // Cart
@@ -65,8 +53,7 @@ const toggleCart = () => (showCart.value = !showCart.value)
 
 const cartTotal = computed(() => cart.value.reduce((s, i) => s + i.price, 0))
 
-// Login
-const login = () => alert('Login – to be implemented')
+
 </script>
 
 
@@ -108,10 +95,10 @@ const login = () => alert('Login – to be implemented')
                     </span>
                 </button>
 
-                <button @click="login"
+                <RouterLink to="/login"
                     class="rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 font-bold text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105">
                     Login
-                </button>
+                </RouterLink>
             </div>
         </div>
     </nav>

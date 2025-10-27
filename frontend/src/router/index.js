@@ -4,8 +4,8 @@ import LoginView from '@/views/Auth/LoginView.vue'
 import ForgetPasswordView from '@/views/Auth/ForgetPasswordView.vue'
 import ResetPasswordView from '@/views/Auth/ResetPasswordView.vue'
 import Tese from '@/views/Admin/Tese.vue'
-import Tes from '@/views/User/Tes.vue'
 import HomeView from '@/views/HomeView.vue'
+import SignupView from '@/views/Auth/SignupView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,6 +14,12 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
+      meta: { layout: 'auth' },
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: SignupView,
       meta: { layout: 'auth' },
     },
     {
@@ -46,20 +52,28 @@ const router = createRouter({
     },
   ],
 })
-
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
+  const role = localStorage.getItem('role')
 
   if (to.meta.requiresAuth && !token) {
-    next('/login')
-  } else if (
-    (to.name === 'login' || to.name === 'forget-password' || to.name === 'password-reset') &&
-    token
-  ) {
-    next('/dashboard')
-  } else {
-    next()
+    return next('/login')
   }
+
+  if (['login', 'signup', 'forget-password', 'password-reset'].includes(to.name) && token) {
+    if (role === 'admin') return next('/admin')
+    else return next('/')
+  }
+
+  if (to.path.startsWith('/admin') && role !== 'admin') {
+    return next('/') // أو redirect لصفحة “ليس لديك صلاحية”
+  }
+
+  if (to.path.startsWith('/') && role === 'admin') {
+    return next('/admin')
+  }
+
+  next()
 })
 
 export default router

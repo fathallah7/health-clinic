@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { RouterLink } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
@@ -11,33 +11,6 @@ const email = ref('');
 const password = ref('');
 const errorMessage = ref('');
 
-const login = async () => {
-    try {
-        isLoading.value = true;
-        const response = await axios.post('/login', {
-            email: email.value,
-            password: password.value
-        });
-        console.log(response.data);
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('role', response.data.user.role);
-
-        if (response.data.user.role === 'admin') {
-            router.push('/admin');
-        } else {
-            router.push('/');
-        }
-    } catch (error) {
-        isLoading.value = false;
-        if (error.response && error.response.data && error.response.data.message) {
-            errorMessage.value = error.response.data.message;
-            console.log(error.response.data.message);
-        } else {
-            errorMessage.value = 'An error occurred during login.';
-        }
-        console.error('Login error:', error);
-    }
-};
 
 
 </script>
@@ -56,7 +29,15 @@ const login = async () => {
             <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Login to Dashboard</h2>
 
             <!-- Form -->
-            <form @submit.prevent="login" class="space-y-4">
+            <form @submit.prevent="" class="space-y-4">
+                <!-- Name Input -->
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                    <input  type="text" id="name" placeholder="Enter your name"
+                        class="mt-1 w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-transparent text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:ring-blue-500/10 focus:outline-none transition-all duration-300 hover:border-gray-400"
+                        required />
+                </div>
+
                 <!-- Email Input -->
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
@@ -68,6 +49,13 @@ const login = async () => {
                 <!-- Password Input -->
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input v-model="password" type="password" id="password" placeholder="Enter your password"
+                        class="mt-1 w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-transparent text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:ring-blue-500/10 focus:outline-none transition-all duration-300 hover:border-gray-400"
+                        required />
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Confirm Password</label>
                     <input v-model="password" type="password" id="password" placeholder="Enter your password"
                         class="mt-1 w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-transparent text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:ring-blue-500/10 focus:outline-none transition-all duration-300 hover:border-gray-400"
                         required />
@@ -90,9 +78,9 @@ const login = async () => {
                                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                             </path>
                         </svg>
-                        <span>{{ isLoading ? 'Logging in...' : 'Log In' }}</span>
+                        <span>{{ isLoading ? 'Signing up...' : 'Sign Up' }}</span>
                     </button>
-                    <!-- Sign up by google -->
+                                        <!-- Sign up by google -->
                     <div class="mt-4">
                         <button
                             class="w-full px-4 py-2.5 bg-gray-400 text-white rounded-lg hover:bg-red-600 focus:ring-3 focus:ring-red-500/10 focus:outline-none transition-all duration-300 flex items-center justify-center">
@@ -106,7 +94,7 @@ const login = async () => {
                                 <path fill="#1976D2"
                                     d="M43.611 20.083H42V20H24v8h11.303c-1.087 3.185-3.025 5.877-5.571 7.651l.005-.003 6.19 5.238C39.556 36.963 44 30.761 44 24c0-1.33-.134-2.597-.334-3.782z" />
                             </svg>
-                            <span>Sign in with Google</span>
+                            <span>Sign up with Google</span>
                         </button>
                     </div>
                 </div>
@@ -114,12 +102,8 @@ const login = async () => {
                 <!-- Additional Links -->
                 <div class="text-center text-sm text-gray-600 space-y-2">
                     <p>
-                        Forgot your password?
-                        <RouterLink to="forget-password" class="text-indigo-600 hover:underline">Reset it</RouterLink>
-                    </p>
-                    <p>
-                        Don't have an account?
-                        <RouterLink to="/signup" class="text-indigo-600 hover:underline">Sign Up</RouterLink>
+                        Already have an account?
+                        <RouterLink to="/login" class="text-indigo-600 hover:underline">Log In</RouterLink>
                     </p>
                 </div>
             </form>
