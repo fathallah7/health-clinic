@@ -7,10 +7,39 @@ import axios from 'axios';
 const router = useRouter();
 const isLoading = ref(false);
 
+const name = ref('');
 const email = ref('');
+const phone = ref('');
 const password = ref('');
+const password_confirmation = ref('')
 const errorMessage = ref('');
 
+const signup = async () => {
+    try {
+        isLoading.value = true;
+        const response = await axios.post('/register', {
+            name: name.value,
+            email: email.value,
+            phone: phone.value,
+            password: password.value,
+            password_confirmation: password_confirmation.value
+        });
+        console.log(response.data);
+        localStorage.setItem('token', response.data.data.token);
+        localStorage.setItem('role', response.data.data.user.role);
+
+        router.push('/');
+    } catch (error) {
+        isLoading.value = false;
+        if (error.response && error.response.data && error.response.data.message) {
+            errorMessage.value = error.response.data.message;
+            console.log(error.response.data.message);
+        } else {
+            errorMessage.value = 'An error occurred during signup.';
+        }
+        console.error('Signup error:', error);
+    }
+};
 
 
 </script>
@@ -29,11 +58,11 @@ const errorMessage = ref('');
             <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Login to Dashboard</h2>
 
             <!-- Form -->
-            <form @submit.prevent="" class="space-y-4">
+            <form @submit.prevent="signup" class="space-y-4">
                 <!-- Name Input -->
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-                    <input  type="text" id="name" placeholder="Enter your name"
+                    <input v-model="name" type="text" id="name" placeholder="Enter your name"
                         class="mt-1 w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-transparent text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:ring-blue-500/10 focus:outline-none transition-all duration-300 hover:border-gray-400"
                         required />
                 </div>
@@ -42,6 +71,14 @@ const errorMessage = ref('');
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                     <input v-model="email" type="email" id="email" placeholder="Enter your email"
+                        class="mt-1 w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-transparent text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:ring-blue-500/10 focus:outline-none transition-all duration-300 hover:border-gray-400"
+                        required />
+                </div>
+
+                <!-- Phone Input -->
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                    <input v-model="phone" type="text" id="phone" placeholder="Enter your phone number"
                         class="mt-1 w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-transparent text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:ring-blue-500/10 focus:outline-none transition-all duration-300 hover:border-gray-400"
                         required />
                 </div>
@@ -55,8 +92,10 @@ const errorMessage = ref('');
                 </div>
 
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">Confirm Password</label>
-                    <input v-model="password" type="password" id="password" placeholder="Enter your password"
+                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm
+                        Password</label>
+                    <input v-model="password_confirmation" type="password" id="password_confirmation"
+                        placeholder="Confirm your password"
                         class="mt-1 w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-transparent text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:ring-blue-500/10 focus:outline-none transition-all duration-300 hover:border-gray-400"
                         required />
                 </div>
@@ -80,7 +119,7 @@ const errorMessage = ref('');
                         </svg>
                         <span>{{ isLoading ? 'Signing up...' : 'Sign Up' }}</span>
                     </button>
-                                        <!-- Sign up by google -->
+                    <!-- Sign up by google -->
                     <div class="mt-4">
                         <button
                             class="w-full px-4 py-2.5 bg-gray-400 text-white rounded-lg hover:bg-red-600 focus:ring-3 focus:ring-red-500/10 focus:outline-none transition-all duration-300 flex items-center justify-center">

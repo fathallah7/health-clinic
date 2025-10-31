@@ -19,10 +19,10 @@ const login = async () => {
             password: password.value
         });
         console.log(response.data);
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('role', response.data.user.role);
+        localStorage.setItem('token', response.data.data.token);
+        localStorage.setItem('role', response.data.data.user.role);
 
-        if (response.data.user.role === 'admin') {
+        if (response.data.data.user.role === 'admin') {
             router.push('/admin');
         } else {
             router.push('/');
@@ -124,5 +124,5 @@ const login = async () => {
                 </div>
             </form>
         </div>
-    </div>
+        </div>
 </template>
