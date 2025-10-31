@@ -48,7 +48,7 @@ const router = createRouter({
     },
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/home',
+      redirect: '/',
     },
   ],
 })
@@ -66,7 +66,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.path.startsWith('/admin') && role !== 'admin') {
-    return next('/') // أو redirect لصفحة “ليس لديك صلاحية”
+    return next('/') 
   }
 
   if (to.path.startsWith('/') && role === 'admin') {
