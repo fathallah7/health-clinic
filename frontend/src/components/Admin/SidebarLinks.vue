@@ -6,6 +6,7 @@ const emit = defineEmits(['link-clicked'])
 
 function logout() {
     localStorage.removeItem('token')
+    localStorage.removeItem('role')
 }
 
 onMounted(() => {
