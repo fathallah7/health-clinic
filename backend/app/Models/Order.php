@@ -7,19 +7,31 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $fillable = [
-        'total',
+        'user_id',
+        'order_number',
+        'total_amount',
         'status',
-        'payment_method',
-        'user_id'
+        'address_id',
+        'notes',
     ];
+
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function items()
+    public function address()
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->belongsTo(UserAddress::class, 'address_id');
+    }
+
+    public static function generateOrderNumber()
+    {
+        return 'ORD-' . strtoupper(substr(uniqid(), -8));
     }
 }

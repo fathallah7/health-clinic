@@ -16,11 +16,10 @@ class ProductController extends Controller
     // Get All Products with Category
     public function index()
     {
-        $products = Product::with('category')->paginate(10);
+        $products = Product::with('category')->get();
         return $this->success($products, 'Products List', 200);
     }
 
-    // Create Product
     public function store(ProductRequest $request)
     {
         $validated = $request->validated();
