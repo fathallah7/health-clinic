@@ -5,8 +5,10 @@ use App\Http\Controllers\Admin\AvailabilityController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\TimeSlotController;
+use App\Http\Controllers\User\AddressController;
 use App\Http\Controllers\User\AppointmentController;
 use App\Http\Controllers\User\CartController;
+use App\Http\Controllers\User\OrderController;
 use App\Http\Controllers\User\UserTimeSlotController;
 use App\Http\Controllers\User\ProductController as UserProductController;
 use Illuminate\Support\Facades\Route;
@@ -32,14 +34,19 @@ Route::middleware('auth:sanctum')->group(function () {
     // Appointments
     Route::post('/appointment', [AppointmentController::class, 'store']);
     Route::delete('/appointment/{appointment}', [AppointmentController::class, 'destroy']);
-    // Products
-    Route::get('/products', [UserProductController::class, 'index']);
     // Cart
     Route::apiResource('/cart', CartController::class);
+    // Orders
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::post('/checkout', [OrderController::class, 'checkout']);
+    // Address
+    Route::apiResource('/address', AddressController::class);
 });
 
 // Public Routes
 Route::get('/time-slot', [AppointmentController::class, 'index']);
+// Products
+Route::get('/products', [UserProductController::class, 'index']);
 
 
 
