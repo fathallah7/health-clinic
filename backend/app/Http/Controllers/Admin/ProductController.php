@@ -23,6 +23,10 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         $validated = $request->validated();
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $validated['image'] = $path;
+        }
         $product = Product::create($validated);
         return $this->success($product, 'Product Created', 200);
     }
@@ -37,6 +41,10 @@ class ProductController extends Controller
     public function update(ProductUpdateRequest $request, Product $product)
     {
         $validated = $request->validated();
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $validated['image'] = $path;
+        }
         $product->update($validated);
         return $this->success($product, 'Product Updated', 200);
     }
