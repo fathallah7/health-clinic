@@ -1,410 +1,447 @@
 <script setup>
-import Spinner from '@/components/Spinner.vue';
-import axios from 'axios';
-import { ref, onMounted } from 'vue';
-import { RouterLink } from 'vue-router';
-import { useToast } from 'vue-toastification';
+import Spinner from '@/components/Spinner.vue'
+import axios from 'axios'
+import { ref, onMounted, computed } from 'vue'
+import { RouterLink } from 'vue-router'
+import { useToast } from 'vue-toastification'
 
-// === Auth & Toast ===
-const isAuth = ref(false);
-const toast = useToast();
+const toast = useToast()
+const isAuth = ref(false)
 
-// === Loading States ===
-const isLoadingAppointments = ref(false);
-const isLoadingUserAppointment = ref(false);
-const isBooking = ref(false);
-const isCancelling = ref(false);
+// Data
+const slots = ref([])
+const products = ref([])
+const myApt = ref(null)
+const cart = ref([])
+const loadingSlots = ref(true)
+const loadingProducts = ref(true)
+const booking = ref(false)
 
-// === Data ===
-const appointments = ref([]);
-const user_appointment = ref(null);
+// Modals
+const showApt = ref(false)
+const showCart = ref(false)
 
-// === Navigation ===
-const navLinks = [
-    { href: '#home', label: 'Home' },
-    { href: '#appointments', label: 'Appointments' },
-    { href: '#products', label: 'Products' },
-    { href: '#contact', label: 'Contact' },
-];
+// Computed
+const cartItems = computed(() => cart.value.reduce((s, i) => s + i.quantity, 0))
+const cartTotal = computed(() => cart.value.reduce((s, i) => s + i.quantity * +i.product.price, 0).toFixed(2))
 
-// === Toggle Modal ===
-const showUserAppointment = ref(false);
-const toggleUserAppointment = () => {
-    showUserAppointment.value = !showUserAppointment.value;
-};
+// API Functions
+const fetchSlots = async () => {
+    try { slots.value = (await axios.get('/time-slot')).data.data || [] }
+    catch { toast.error('Failed to load appointments') }
+    finally { loadingSlots.value = false }
+}
 
-// === Logout ===
+const fetchProducts = async () => {
+    try { products.value = (await axios.get('/products')).data.data || [] }
+    catch { toast.error('Failed to load products') }
+    finally { loadingProducts.value = false }
+}
+
+const fetchMyApt = async () => {
+    try { myApt.value = (await axios.get('/user-time-slot')).data.data[0] || null }
+    catch { }
+}
+
+const book = async (id) => {
+    if (!isAuth.value) return toast.warning('Please sign in first')
+    try {
+        booking.value = true
+        await axios.post('/appointment', { slot_id: id })
+        await Promise.all([fetchSlots(), fetchMyApt()])
+        toast.success('Appointment booked!')
+        showApt.value = true
+    } catch (e) { toast.error(e.response?.data?.message || 'Booking failed') }
+    finally { booking.value = false }
+}
+
+const cancel = async () => {
+    if (!confirm('Cancel appointment?')) return
+    try {
+        await axios.delete(`/appointment/${myApt.value.id}`)
+        await Promise.all([fetchSlots(), fetchMyApt()])
+        toast.success('Cancelled')
+        showApt.value = false
+    } catch { toast.error('Failed') }
+}
+
+const addToCart = async (id) => {
+    try {
+        await axios.post('/cart', { product_id: id, quantity: 1 })
+        toast.success('Added to cart')
+        fetchCart()
+    } catch { toast.error('Failed to add') }
+}
+
+const fetchCart = async () => {
+    try { cart.value = (await axios.get('/cart')).data.data || [] }
+    catch { }
+}
+
+const updateQty = async (id, qty) => {
+    if (qty < 1) return removeFromCart(id)
+    await axios.put(`/cart/${id}`, { quantity: qty })
+    fetchCart()
+}
+
+const removeFromCart = async (id) => {
+    await axios.delete(`/cart/${id}`)
+    fetchCart()
+    toast.success('Removed')
+}
+
+const checkout = async () => {
+    try {
+        await axios.post('/checkout')
+        toast.success('Order placed! Check your email.')
+        cart.value = []
+        showCart.value = false
+    } catch { toast.error('Checkout failed') }
+}
+
 const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    isAuth.value = false;
-    toast.success('Logged out successfully');
-};
 
-// === Fetch Data ===
-const fetchAppointments = async () => {
-    try {
-        isLoadingAppointments.value = true;
-        const response = await axios.get('/time-slot');
-        appointments.value = response.data.data || [];
-    } catch (error) {
-        toast.error('Failed to load appointments. Try again.');
-    } finally {
-        isLoadingAppointments.value = false;
-    }
-};
+    localStorage.removeItem('token')
+    localStorage.clear()
 
-const fetchUserAppointment = async () => {
-    try {
-        isLoadingUserAppointment.value = true;
-        const response = await axios.get('/user-time-slot');
-        user_appointment.value = response.data.data[0] || null;
-    } catch (error) {
-        // Normal if no appointment
-    } finally {
-        isLoadingUserAppointment.value = false;
-    }
-};
+    cart.value = []
+    myApt.value = null
+    slots.value = []
+    products.value = []
+    isAuth.value = false
 
-// === Book & Cancel ===
-const BookAppointment = async (id) => {
-    if (!isAuth.value) {
-        toast.warning('Please log in to book an appointment');
-        return;
-    }
-    try {
-        isBooking.value = true;
-        await axios.post('/appointment', { slot_id: id });
-        await Promise.all([fetchAppointments(), fetchUserAppointment()]);
-        toast.success('Appointment booked successfully!');
-        showUserAppointment.value = true;
-    } catch (error) {
-        toast.error(error.response?.data?.message || 'Booking failed. Try again.');
-    } finally {
-        isBooking.value = false;
-    }
-};
+    window.location.reload()
 
-const cancelAppointment = async (id) => {
-    if (!confirm('Are you sure you want to cancel?')) return;
-    try {
-        isCancelling.value = true;
-        await axios.delete(`/appointment/${id}`);
-        await Promise.all([fetchAppointments(), fetchUserAppointment()]);
-        toast.success('Appointment cancelled');
-        showUserAppointment.value = false;
-    } catch (error) {
-        toast.error('Cancellation failed');
-    } finally {
-        isCancelling.value = false;
-    }
-};
+    toast.success('Logged out successfully')
+}
 
-// === Format Date ===
-const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric'
-    });
-};
+const fmt = (d) => new Date(d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
 
 onMounted(() => {
-    const token = localStorage.getItem('token');
-    if (token) isAuth.value = true;
-
-    fetchAppointments();
-    fetchUserAppointment();
-});
+    if (localStorage.token) { isAuth.value = true; fetchCart() }
+    fetchSlots()
+    fetchProducts()
+    fetchMyApt()
+})
 </script>
 
 <template>
-
-    <!-- Navigation -->
-    <nav class="fixed inset-x-0 top-0 z-50 bg-white/95 backdrop-blur-xl shadow-lg border-b border-gray-100">
-        <div class="container mx-auto flex items-center justify-between px-5 py-4">
+    <!-- Navbar -->
+    <nav class="fixed inset-x-0 top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <!-- Logo -->
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center gap-3">
                 <div
-                    class="w-11 h-11 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-md">
-                    <i class="fas fa-stethoscope text-white text-lg"></i>
+                    class="w-10 h-10 bg-gradient-to-br from-teal-700 to-emerald-800 rounded-xl flex items-center justify-center shadow-lg">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2" />
+                    </svg>
                 </div>
-                <h1
-                    class="text-2xl font-black bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
-                    Dr. Clinic
-                </h1>
+                <h1 class="text-lg font-bold text-gray-900">Dr.Fathallah</h1>
             </div>
 
-            <!-- Desktop Links -->
-            <ul class="hidden md:flex items-center space-x-10">
-                <li v-for="link in navLinks" :key="link.href">
-                    <a :href="link.href"
-                        class="text-gray-700 font-semibold hover:text-blue-600 transition-all duration-300 relative group">
-                        {{ link.label }}
-                        <span
-                            class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-700 transition-all duration-300 group-hover:w-full rounded-full"></span>
-                    </a>
-                </li>
-            </ul>
-
-            <!-- Actions -->
-            <div class="flex items-center space-x-4">
-                <!-- User Appointment -->
-                <button @click="toggleUserAppointment"
-                    class="relative p-2.5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 group">
-                    <i class="fas fa-calendar-check text-blue-600 text-lg"></i>
-                    <span v-if="user_appointment"
-                        class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full animate-ping"></span>
-                    <span v-if="user_appointment"
-                        class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full"></span>
+            <!-- Desktop Nav -->
+            <div class=" md:flex items-center gap-6">
+                <button @click="showCart = true"
+                    class="relative p-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 transition">
+                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2-8m4 8v6m4-6v6m4-6v6" />
+                    </svg>
+                    <span v-if="cartItems"
+                        class="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                        {{ cartItems }}
+                    </span>
                 </button>
 
-                <!-- Auth Buttons -->
+                <button @click="showApt = true" class="p-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 transition">
+                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </button>
+
                 <template v-if="!isAuth">
-                    <RouterLink to="/signup"
-                        class="px-6 py-2.5 bg-white border-2 border-blue-600 text-blue-600 font-bold rounded-full hover:bg-blue-50 transition-all duration-300 shadow-md">
-                        Register
-                    </RouterLink>
                     <RouterLink to="/login"
-                        class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
-                        Login
+                        class="px-5 py-2.5 bg-gradient-to-r from-teal-700 to-emerald-800 text-white rounded-xl font-medium shadow-md hover:shadow-lg transition">
+                        Sign In
                     </RouterLink>
                 </template>
                 <button v-else @click="logout"
-                    class="px-6 py-2.5 bg-gradient-to-r from-red-600 to-pink-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-2">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    class="px-5 py-2.5 bg-rose-600 text-white rounded-xl font-medium shadow-md hover:shadow-lg transition">
+                    Logout
                 </button>
             </div>
         </div>
     </nav>
 
-    <!-- Hero -->
-    <section id="home"
-        class="min-h-screen flex items-center justify-center pt-20 bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-        <div class="text-center px-6 max-w-5xl mx-auto">
-            <h1 class="text-5xl md:text-7xl font-black text-gray-900 leading-tight">
-                Healthcare<br>
-                <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    Reimagined
-                </span>
-            </h1>
-            <p class="mt-6 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-                Book instantly. Track easily. All in one modern platform.
-            </p>
-            <div class="mt-12 flex flex-col sm:flex-row gap-5 justify-center">
-                <a href="#appointments"
-                    class="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-lg">
-                    Book Now
-                </a>
-                <a href="#products"
-                    class="px-10 py-4 bg-white border-2 border-blue-600 text-blue-600 font-bold rounded-full shadow-lg hover:bg-blue-50 hover:scale-105 transition-all duration-300 text-lg">
-                    View Products
-                </a>
+    <!-- HERO -->
+    <section class="relative min-h-screen overflow-hidden bg-gradient-to-br from-teal-50 via-white to-emerald-50 pt-20">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute -top-40 -left-40 w-96 h-96 bg-teal-200/30 rounded-full blur-3xl animate-pulse"></div>
+            <div
+                class="absolute top-20 right-0 w-80 h-80 bg-emerald-200/30 rounded-full blur-3xl animate-pulse delay-1000">
             </div>
+            <div
+                class="absolute bottom-0 left-1/3 w-72 h-72 bg-cyan-200/20 rounded-full blur-3xl animate-pulse delay-500">
+            </div>
+        </div>
+
+        <div
+            class="relative grid grid-cols-1 lg:grid-cols-2 items-center min-h-screen max-w-7xl mx-auto px-6 gap-8 lg:gap-12">
+            <!-- Content -->
+            <div class="space-y-6 text-center lg:text-left">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-full shadow-md">
+                    <div class="w-2 h-2 bg-emerald-600 rounded-full animate-pulse"></div>
+                    <span class="text-sm font-bold text-emerald-800">Premium Healthcare in Alexandria</span>
+                </div>
+
+                <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight">
+                    <span class="block text-gray-900">Excellence in</span>
+                    <span
+                        class="block bg-gradient-to-r from-teal-600 via-emerald-700 to-cyan-700 bg-clip-text text-transparent">
+                        Modern Medicine
+                    </span>
+                </h1>
+
+                <p class="text-base sm:text-lg md:text-xl text-gray-700 max-w-2xl mx-auto lg:mx-0">
+                    Personalized consultations, cutting-edge treatments, and premium medical products —
+                    <span class="text-emerald-700 font-bold">delivered with precision, care, and trust.</span>
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <a href="#appointments"
+                        class="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-teal-600 to-emerald-700 text-white text-base sm:text-lg font-bold rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                        Book Consultation
+                        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+
+                    <a href="#products"
+                        class="inline-flex items-center justify-center gap-2 px-8 py-4 border-4 border-teal-600 text-teal-700 text-base sm:text-lg font-bold rounded-2xl hover:bg-teal-600 hover:text-white transition-all duration-300">
+                        Explore Products
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2" />
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Trust Indicators -->
+                <div class="flex flex-wrap justify-center lg:justify-start gap-6 pt-8 text-sm">
+                    <div
+                        class="flex items-center gap-3 bg-white/60 backdrop-blur-sm px-4 py-3 rounded-2xl shadow-md border border-gray-100">
+                        <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-emerald-700" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-900">5000+</div>
+                            <div class="text-gray-600">Happy Patients</div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="flex items-center gap-3 bg-white/60 backdrop-blur-sm px-4 py-3 rounded-2xl shadow-md border border-gray-100">
+                        <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-teal-700" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.953a1 1 0 00.95.69h4.16c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.287 3.953c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.784.57-1.838-.197-1.54-1.118l1.287-3.953a1 1 0 00-.364-1.118L2.316 9.38c-.784-.57-.38-1.81.588-1.81h4.16a1 1 0 00.95-.69l1.286-3.953z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-900">4.9/5</div>
+                            <div class="text-gray-600">Patient Rating</div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="flex items-center gap-3 bg-white/60 backdrop-blur-sm px-4 py-3 rounded-2xl shadow-md border border-gray-100">
+                        <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-amber-700" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h.01a1 1 0 100-2H6zm2 0a1 1 0 000 2h.01a1 1 0 100-2H8zm2 0a1 1 0 000 2h.01a1 1 0 100-2H10zm2 0a1 1 0 000 2h.01a1 1 0 100-2H12zm-6 3a1 1 0 000 2h.01a1 1 0 100-2H6zm2 0a1 1 0 000 2h.01a1 1 0 100-2H8zm2 0a1 1 0 000 2h.01a1 1 0 100-2H10zm2 0a1 1 0 000 2h.01a1 1 0 100-2H12z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-900">24/7</div>
+                            <div class="text-gray-600">Support Available</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctor Image -->
+            <div class="flex justify-center lg:justify-end">
+                <div class="relative w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg">
+                    <div
+                        class="absolute -inset-6 bg-white/30 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/50 transform rotate-3 scale-90 opacity-60 hidden lg:block">
+                    </div>
+                    <div class="relative bg-white rounded-3xl shadow-3xl overflow-hidden border-8 border-white">
+                        <img src="../assets/logo.jpg" alt="Dr. Ahmed Hassan" class="w-full h-auto object-cover"
+                            loading="eager" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <svg class="w-7 h-7 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
         </div>
     </section>
 
     <!-- Appointments -->
-    <section id="appointments" class="py-24 bg-gray-50">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-black text-gray-800">Available Appointments</h2>
-                <p class="mt-3 text-gray-600 text-lg">Choose your preferred time</p>
-            </div>
+    <section id="appointments" class="py-16 sm:py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center mb-12 sm:mb-16 text-gray-900">Available Appointments
+            </h2>
 
-            <!-- Skeleton Loading -->
-            <div v-if="isLoadingAppointments"
-                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <div v-for="n in 8" :key="n"
-                    class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg animate-pulse border border-gray-100">
-                    <div class="h-6 bg-gray-200 rounded w-24 mx-auto mb-3"></div>
-                    <div class="h-9 bg-gray-300 rounded w-20 mx-auto mb-6"></div>
-                    <div class="h-11 bg-gray-200 rounded-full"></div>
+            <div v-if="loadingSlots" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div v-for="i in 8" :key="i" class="bg-gray-100 rounded-2xl p-6 animate-pulse">
+                    <div class="h-4 bg-gray-200 rounded mb-3"></div>
+                    <div class="h-8 bg-gray-300 rounded-xl"></div>
                 </div>
             </div>
 
-            <!-- Empty State -->
-            <div v-else-if="!appointments.length" class="text-center py-20">
-                <div
-                    class="w-28 h-28 mx-auto mb-6 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-inner">
-                    <i class="fas fa-calendar-times text-5xl text-gray-400"></i>
+            <div v-else class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div v-for="s in slots" :key="s.id"
+                    class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl border border-gray-100 transition text-center">
+                    <p class="text-xs sm:text-sm text-gray-600">{{ fmt(s.date) }}</p>
+                    <p class="text-lg sm:text-xl font-bold text-gray-900 mt-2">{{ s.start_time }}</p>
+
+                    <button v-if="s.status === 'available'" @click="book(s.id)" :disabled="booking"
+                        class="mt-4 w-full py-3 bg-gradient-to-r from-teal-700 to-emerald-800 text-white rounded-xl text-sm font-medium disabled:opacity-60">
+                        {{ booking ? 'Booking...' : 'Book Now' }}
+                    </button>
+
+                    <p v-else class="mt-4 text-rose-600 font-semibold text-sm">Reserved</p>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-700">No appointments available</h3>
-                <p class="text-gray-500 mt-3">Check back later for new slots</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products -->
+    <section id="products" class="py-16 sm:py-24 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center mb-12 sm:mb-16 text-gray-900">Premium Medical Products
+            </h2>
+
+            <div v-if="loadingProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div v-for="i in 8" :key="i" class="bg-white rounded-2xl p-5 animate-pulse">
+                    <div class="h-40 bg-gray-200 rounded-xl mb-3"></div>
+                    <div class="h-5 bg-gray-200 rounded mb-2"></div>
+                    <div class="h-4 bg-gray-300 rounded w-20"></div>
+                </div>
             </div>
 
-            <!-- Appointments Cards -->
-            <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <div v-for="apt in appointments" :key="apt.id"
-                    class="group bg-white rounded-2xl p-1 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 overflow-hidden">
-                    <div
-                        class="bg-gradient-to-br from-blue-50/50 to-indigo-50/50 p-5 rounded-2xl h-full flex flex-col items-center text-center relative">
-                        <!-- Decorative Corner -->
-                        <div
-                            class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-blue-400 to-transparent opacity-20 rounded-bl-3xl">
-                        </div>
-
-                        <p class="text-xl font-bold text-gray-800 relative z-10">{{ formatDate(apt.date) }}</p>
-                        <p
-                            class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-700 mt-2 relative z-10">
-                            {{ apt.start_time }}
-                        </p>
-
-                        <div class="my-6">
-                            <span
-                                :class="apt.status === 'booked' ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'"
-                                class="px-6 py-2.5 rounded-full text-sm font-bold tracking-wide shadow-sm">
-                                {{ apt.status === 'booked' ? 'Booked' : 'Available' }}
-                            </span>
-                        </div>
-
-                        <!-- Book Button -->
-                        <button v-if="apt.status === 'available'" @click="BookAppointment(apt.id)"
-                            :disabled="isBooking || !isAuth"
-                            class="w-full mt-auto py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                            <span v-if="isBooking">
-                                <i class="fas fa-spinner fa-spin"></i> Booking...
-                            </span>
-                            <span v-else>Book Now</span>
+            <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div v-for="p in products" :key="p.id"
+                    class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition">
+                    <img :src="p.image ? `http://127.0.0.1:8000/storage/${p.image}` : '/placeholder.jpg'"
+                        class="w-full h-48 sm:h-56 object-cover">
+                    <div class="p-5">
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 line-clamp-2">{{ p.name }}</h3>
+                        <p class="text-xl sm:text-2xl font-bold text-teal-700 mt-2">{{ p.price }} EGP</p>
+                        <button @click="addToCart(p.id)"
+                            class="mt-4 w-full py-3 bg-gradient-to-r from-teal-700 to-emerald-800 text-white rounded-xl text-sm font-medium hover:shadow-lg transition">
+                            Add to Cart
                         </button>
-
-                        <p v-else class="mt-auto text-red-600 font-medium flex items-center gap-2">
-                            <i class="fas fa-lock"></i> Taken
-                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- User Appointment Modal -->
-    <div v-if="showUserAppointment"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-        @click.self="toggleUserAppointment">
-        <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-7 border border-gray-100">
-
-            <!-- Loading -->
-            <div v-if="isLoadingUserAppointment" class="text-center py-12">
-                <Spinner />
-                <p class="mt-4 text-gray-600">Loading your appointment...</p>
-            </div>
-
-            <!-- No Appointment -->
-            <div v-else-if="!user_appointment" class="text-center py-10">
-                <div
-                    class="w-24 h-24 mx-auto mb-5 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-inner">
-                    <i class="fas fa-calendar-slash text-4xl text-gray-400"></i>
+    <!-- Modals -->
+    <!-- Appointment Modal -->
+    <teleport to="body">
+        <div v-if="showApt" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            @click.self="showApt = false">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8">
+                <h3 class="text-xl sm:text-2xl font-bold mb-6">Your Appointment</h3>
+                <div v-if="!myApt" class="text-center py-12 text-gray-600 text-sm sm:text-base">
+                    No appointment booked
                 </div>
-                <h3 class="text-xl font-bold text-gray-700">No Appointment</h3>
-                <p class="text-gray-500 mt-2">You haven't booked any appointment yet</p>
-                <button @click="toggleUserAppointment"
-                    class="mt-6 px-8 py-3 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition">
-                    Close
+                <div v-else class="bg-gray-50 rounded-xl p-5 space-y-3 text-sm sm:text-base">
+                    <p><span class="font-medium">Date:</span> {{ fmt(myApt.slot.date) }}</p>
+                    <p><span class="font-medium">Time:</span> {{ myApt.slot.start_time }}</p>
+                </div>
+                <button v-if="myApt" @click="cancel"
+                    class="mt-5 w-full py-3 bg-rose-600 text-white rounded-xl font-medium text-sm">
+                    Cancel Appointment
                 </button>
+                <button @click="showApt = false" class="mt-3 text-gray-500 underline text-sm">Close</button>
             </div>
+        </div>
+    </teleport>
 
-            <!-- Has Appointment -->
-            <div v-else>
-                <div class="flex justify-between items-start mb-6">
-                    <div class="flex items-center gap-4">
-                        <div
-                            class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
-                            <i class="fas fa-check text-white text-xl"></i>
+    <!-- Cart Modal -->
+    <teleport to="body">
+        <div v-if="showCart"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            @click.self="showCart = false">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+                <div class="p-6 sm:p-8 border-b">
+                    <h3 class="text-xl sm:text-2xl font-bold">Shopping Cart ({{ cartItems }})</h3>
+                </div>
+                <div class="p-6 sm:p-8 space-y-5">
+                    <div v-if="!cart.length" class="text-center py-16 text-gray-600 text-sm sm:text-base">Your cart is
+                        empty
+                    </div>
+                    <div v-for="item in cart" :key="item.id" class="flex items-center gap-4 bg-gray-50 rounded-xl p-4">
+                        <img :src="item.product.image ? `http://127.0.0.1:8000/storage/${item.product.image}` : '/placeholder.jpg'"
+                            class="w-16 h-16 rounded-xl object-cover">
+                        <div class="flex-1">
+                            <p class="font-semibold text-sm sm:text-base">{{ item.product.name }}</p>
+                            <p class="text-xs sm:text-sm text-gray-600">{{ item.product.price }} EGP × {{ item.quantity
+                                }}
+                            </p>
                         </div>
-                        <div>
-                            <h3 class="text-xl font-bold text-gray-900">Your Appointment</h3>
-                            <p class="text-sm text-emerald-600 font-medium">Confirmed & Ready</p>
+                        <div class="flex items-center gap-2">
+                            <button @click="updateQty(item.id, item.quantity - 1)"
+                                class="w-8 h-8 rounded-full bg-gray-300 hover:bg-gray-400 text-sm">-</button>
+                            <span class="w-10 text-center font-medium text-sm">{{ item.quantity }}</span>
+                            <button @click="updateQty(item.id, item.quantity + 1)"
+                                class="w-8 h-8 rounded-full bg-teal-700 text-white hover:bg-teal-800 text-sm">+</button>
                         </div>
                     </div>
-                    <button @click="toggleUserAppointment" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-lg"></i>
+                </div>
+                <div class="p-6 sm:p-8 bg-gradient-to-r from-teal-50 to-emerald-50 border-t">
+                    <div class="flex justify-between text-lg sm:text-2xl font-bold mb-5">
+                        <span>Total</span>
+                        <span class="text-teal-800">{{ cartTotal }} EGP</span>
+                    </div>
+                    <button @click="checkout"
+                        class="w-full py-3 sm:py-4 bg-gradient-to-r from-teal-700 to-emerald-800 text-white rounded-xl font-medium shadow-lg hover:shadow-xl text-sm sm:text-base">
+                        Complete Purchase
                     </button>
                 </div>
-
-                <div
-                    class="p-5 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200 space-y-4">
-                    <div class="flex justify-between">
-                        <span class="font-medium text-gray-600">Date</span>
-                        <span class="font-bold text-gray-800">{{ formatDate(user_appointment.slot.date) }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="font-medium text-gray-600">Time</span>
-                        <span class="font-bold text-gray-800">{{ user_appointment.slot.start_time }} – {{
-                            user_appointment.slot.end_time }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="font-medium text-gray-600">Status</span>
-                        <span class="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-bold">
-                            {{ user_appointment.status }}
-                        </span>
-                    </div>
-                </div>
-
-                <button @click="cancelAppointment(user_appointment.id)" :disabled="isCancelling"
-                    class="mt-6 w-full py-3 bg-gradient-to-r from-red-600 to-pink-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-70 flex items-center justify-center gap-2">
-                    <span v-if="isCancelling">
-                        <i class="fas fa-spinner fa-spin"></i> Cancelling...
-                    </span>
-                    <span v-else>Cancel Appointment</span>
-                </button>
-
-                <p class="mt-5 text-center text-xs text-gray-400">
-                    ID: #{{ String(user_appointment.id).padStart(3, '0') }} •
-                    Booked on {{ new Date(user_appointment.created_at).toLocaleDateString('en-US') }}
-                </p>
             </div>
         </div>
-    </div>
+    </teleport>
 
     <!-- Footer -->
-    <footer id="contact" class="py-16 bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 text-white">
-        <div class="container mx-auto px-6 text-center">
-            <div class="flex items-center justify-center gap-3 mb-4">
-                <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-                    <i class="fas fa-stethoscope text-xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold">Dr. Clinic</h3>
-            </div>
-            <p class="text-sm opacity-90 mb-8">Modern healthcare. Simple. Secure.</p>
-
-            <div class="flex justify-center gap-5 mb-8">
-                <a href="#"
-                    class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-all backdrop-blur-sm">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="#"
-                    class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-all backdrop-blur-sm">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="#"
-                    class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-all backdrop-blur-sm">
-                    <i class="fab fa-instagram"></i>
-                </a>
-            </div>
-
-            <p class="text-xs opacity-70">
-                © {{ new Date().getFullYear() }} Dr. Clinic. All rights reserved.
-            </p>
+    <footer class="py-12 sm:py-16 bg-gradient-to-r from-teal-900 to-emerald-900 text-white text-center">
+        <div class="max-w-7xl mx-auto px-6">
+            <h3 class="text-xl sm:text-2xl font-bold mb-1">Dr.Fathallah Clinic</h3>
+            <p class="text-teal-200 text-sm sm:text-base">Alexandria • Egypt</p>
+            <p class="mt-6 sm:mt-8 text-xs sm:text-sm opacity-70">© 2025 All rights reserved.</p>
         </div>
     </footer>
-
 </template>
 
-<style scoped>
-/* Smooth Scroll */
+<style>
 html {
     scroll-behavior: smooth;
-}
-
-/* Card Hover Lift */
-.group:hover {
-    transform: translateY(-6px);
-}
-
-/* Button Focus Ring */
-button:focus-visible,
-a:focus-visible {
-    outline: 2px solid #3b82f6;
-    outline-offset: 3px;
 }
 </style>
