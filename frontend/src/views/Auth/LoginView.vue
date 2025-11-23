@@ -1,10 +1,8 @@
 <script setup>
 import { RouterLink } from 'vue-router';
-import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import axios from 'axios';
 
-const router = useRouter();
 const isLoading = ref(false);
 
 const email = ref('');
@@ -18,17 +16,18 @@ const login = async () => {
             email: email.value,
             password: password.value
         });
-        console.log(response.data);
+
         localStorage.setItem('token', response.data.data.token);
         localStorage.setItem('role', response.data.data.user.role);
 
+        isLoading.value = false;
+
         if (response.data.data.user.role === 'admin') {
-            router.push('/admin');
+            window.location.href = '/admin';
         } else {
-            router.push('/');
+            window.location.href = '/';
         }
     } catch (error) {
-        isLoading.value = false;
         if (error.response && error.response.data && error.response.data.message) {
             errorMessage.value = error.response.data.message;
             console.log(error.response.data.message);
@@ -36,6 +35,8 @@ const login = async () => {
             errorMessage.value = 'An error occurred during login.';
         }
         console.error('Login error:', error);
+    } finally {
+        isLoading.value = false;
     }
 };
 

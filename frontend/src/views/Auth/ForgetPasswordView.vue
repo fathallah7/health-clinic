@@ -86,7 +86,7 @@ const sendResetLink = async () => {
           <button 
             type="submit"
             :disabled="isLoading"
-            class="w-full py-5 bg-gradient-to-r from-teal-600 to-emerald-700 text-white text-lg font-bold rounded-2xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
+            class="w-full py-5 bg-gradient-to-r from-teal-600 to-emerald-700 text-white text rounded-2xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
           >
             <svg v-if="isLoading" class="animate-spin h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
