@@ -7,19 +7,11 @@ const loading = ref(true)
 const error = ref(null)
 
 // Filter State
-const filterStatus = ref('all') // 'all', 'confirmed', 'pending', 'cancelled'
 const searchQuery = ref('')
-
-
 
 // Filtered Appointments
 const filteredAppointments = computed(() => {
     let filtered = appointments.value
-
-    // Filter by status
-    if (filterStatus.value !== 'all') {
-        filtered = filtered.filter(app => app.status === filterStatus.value)
-    }
 
     // Filter by search query (patient name, email, phone)
     if (searchQuery.value) {
@@ -38,9 +30,6 @@ const filteredAppointments = computed(() => {
 const statistics = computed(() => {
     return {
         total: appointments.value.length,
-        confirmed: appointments.value.filter(a => a.status === 'confirmed').length,
-        pending: appointments.value.filter(a => a.status === 'pending').length,
-        cancelled: appointments.value.filter(a => a.status === 'cancelled').length
     }
 })
 
@@ -87,24 +76,6 @@ const formatDate = (dateString) => {
     })
 }
 
-const getStatusClass = (status) => {
-    const classes = {
-        'confirmed': 'bg-green-100 text-green-700 border-green-300',
-        'pending': 'bg-yellow-100 text-yellow-700 border-yellow-300',
-        'cancelled': 'bg-red-100 text-red-700 border-red-300'
-    }
-    return classes[status] || 'bg-gray-100 text-gray-700 border-gray-300'
-}
-
-const getStatusIcon = (status) => {
-    const icons = {
-        'confirmed': 'fa-check-circle',
-        'pending': 'fa-clock',
-        'cancelled': 'fa-times-circle'
-    }
-    return icons[status] || 'fa-question-circle'
-}
-
 const getGenderIcon = (gender) => {
     if (gender === 'male') return 'fa-mars text-blue-500'
     if (gender === 'female') return 'fa-venus text-pink-500'
@@ -139,48 +110,6 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
-
-            <!-- Confirmed -->
-            <!-- <div
-                class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm font-medium mb-1">Confirmed</p>
-                        <p class="text-3xl font-bold text-green-600">{{ statistics.confirmed }}</p>
-                    </div>
-                    <div class="w-14 h-14 rounded-xl bg-green-100 flex items-center justify-center">
-                        <i class="fa-solid fa-check-circle text-green-600 text-2xl"></i>
-                    </div>
-                </div>
-            </div> -->
-
-            <!-- Pending -->
-            <!-- <div
-                class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm font-medium mb-1">Pending</p>
-                        <p class="text-3xl font-bold text-yellow-600">{{ statistics.pending }}</p>
-                    </div>
-                    <div class="w-14 h-14 rounded-xl bg-yellow-100 flex items-center justify-center">
-                        <i class="fa-solid fa-clock text-yellow-600 text-2xl"></i>
-                    </div>
-                </div>
-            </div> -->
-
-            <!-- Cancelled -->
-            <!-- <div
-                class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm font-medium mb-1">Cancelled</p>
-                        <p class="text-3xl font-bold text-red-600">{{ statistics.cancelled }}</p>
-                    </div>
-                    <div class="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center">
-                        <i class="fa-solid fa-times-circle text-red-600 text-2xl"></i>
-                    </div>
-                </div>
-            </div> -->
         </div>
 
         <!-- Filters -->
@@ -255,9 +184,6 @@ onMounted(() => {
                                 <i class="fa-solid fa-clock mr-2"></i>Slot ID
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                                <i class="fa-solid fa-info-circle mr-2"></i>Status
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                                 <i class="fa-solid fa-calendar mr-2"></i>Created At
                             </th>
                             <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
@@ -314,15 +240,6 @@ onMounted(() => {
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-sm font-semibold">
                                     Slot #{{ appointment.slot_id }}
-                                </span>
-                            </td>
-
-                            <!-- Status -->
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span
-                                    :class="['px-3 py-1 rounded-lg text-xs font-bold uppercase flex items-center gap-2 w-fit border-2', getStatusClass(appointment.status)]">
-                                    <i :class="['fa-solid', getStatusIcon(appointment.status)]"></i>
-                                    {{ appointment.status }}
                                 </span>
                             </td>
 
