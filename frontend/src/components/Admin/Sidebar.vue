@@ -24,7 +24,7 @@ function handleLinkClick() {
         <!-- Sidebar Header -->
         <div
             class="relative flex items-center justify-center p-6 border-b  border-gray-200 bg-white/80 backdrop-blur-sm">
-            <RouterLink to="/home" class="flex items-center justify-center w-full group">
+            <a href="#" class="flex items-center justify-center w-full group">
                 <div class="relative flex items-center gap-3">
                     <!-- Icon with glow effect -->
                     <div class="relative">
@@ -46,7 +46,7 @@ function handleLinkClick() {
                         <span class="text-xs text-gray-500 font-normal">Management System</span>
                     </div>
                 </div>
-            </RouterLink>
+            </a>
         </div>
 
         <!-- Sidebar Menu with custom scrollbar -->

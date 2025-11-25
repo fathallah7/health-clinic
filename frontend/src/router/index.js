@@ -3,7 +3,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '@/views/Auth/LoginView.vue'
 import ForgetPasswordView from '@/views/Auth/ForgetPasswordView.vue'
 import ResetPasswordView from '@/views/Auth/ResetPasswordView.vue'
-import Tese from '@/views/Admin/Tese.vue'
 import HomeView from '@/views/HomeView.vue'
 import SignupView from '@/views/Auth/SignupView.vue'
 import AvailabilityView from '@/views/Admin/AvailabilityView.vue'
@@ -46,14 +45,6 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       meta: { layout: 'user', requiresAuth: false },
-    },
-
-    // Admin Routes
-    {
-      path: '/admin',
-      name: 'admin',
-      component: Tese,
-      meta: { layout: 'admin', requiresAuth: true, role: 'admin' },
     },
     {
       path: '/availability',
@@ -106,7 +97,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.role === 'admin' && role !== 'admin') {
-    return next('/') // User مش مسموحله يدخل صفحات Admin
+    return next('/') 
   }
 
   if (to.meta.role === 'user' && role === 'admin') {

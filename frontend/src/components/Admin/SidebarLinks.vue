@@ -32,18 +32,6 @@ onMounted(() => {
             </div>
 
             <ul class="space-y-1.5">
-                <!-- Dashboard -->
-                <li class="menu-item" style="--delay: 0s">
-                    <RouterLink @click="$emit('link-clicked')" to="/home" class="menu-link group"
-                        :class="{ 'active': $route.path === '/home' }">
-                        <div class="icon-wrapper">
-                            <i class="fa-solid fa-chart-line text-lg"></i>
-                        </div>
-                        <span class="link-text">Dashboard</span>
-                        <div class="link-indicator"></div>
-                    </RouterLink>
-                </li>
-
                 <!-- Availability -->
                 <li class="menu-item" style="--delay: 0.05s">
                     <RouterLink @click="$emit('link-clicked')" to="/availability" class="menu-link group"
@@ -102,17 +90,6 @@ onMounted(() => {
                     </RouterLink>
                 </li>
 
-                <!-- Orders -->
-                <li class="menu-item" style="--delay: 0.2s">
-                    <RouterLink @click="$emit('link-clicked')" to="/orders" class="menu-link group"
-                        :class="{ 'active': $route.path === '/orders' }">
-                        <div class="icon-wrapper">
-                            <i class="fa-solid fa-shopping-cart text-lg"></i>
-                        </div>
-                        <span class="link-text">Orders</span>
-                        <div class="link-indicator"></div>
-                    </RouterLink>
-                </li>
             </ul>
         </div>
 

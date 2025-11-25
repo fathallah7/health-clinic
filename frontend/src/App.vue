@@ -14,8 +14,6 @@ const layout = computed(() => {
   switch (route.meta.layout) {
     // admin + user
     case 'auth': return AuthLayout
-    // admin only
-    case 'landing': return LandingLayout
     // user only
     case 'user': return UserAppLayout
     // default Admin
