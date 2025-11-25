@@ -90,7 +90,29 @@ onMounted(() => {
             </div>
 
             <ul class="space-y-1.5">
+                <!-- Products -->
+                <li class="menu-item" style="--delay: 0.15s">
+                    <RouterLink @click="$emit('link-clicked')" to="/products" class="menu-link group"
+                        :class="{ 'active': $route.path === '/products' }">
+                        <div class="icon-wrapper">
+                            <i class="fa-solid fa-box-open text-lg"></i>
+                        </div>
+                        <span class="link-text">Products</span>
+                        <div class="link-indicator"></div>
+                    </RouterLink>
+                </li>
 
+                <!-- Orders -->
+                <li class="menu-item" style="--delay: 0.2s">
+                    <RouterLink @click="$emit('link-clicked')" to="/orders" class="menu-link group"
+                        :class="{ 'active': $route.path === '/orders' }">
+                        <div class="icon-wrapper">
+                            <i class="fa-solid fa-shopping-cart text-lg"></i>
+                        </div>
+                        <span class="link-text">Orders</span>
+                        <div class="link-indicator"></div>
+                    </RouterLink>
+                </li>
             </ul>
         </div>
 

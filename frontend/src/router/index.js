@@ -9,6 +9,7 @@ import SignupView from '@/views/Auth/SignupView.vue'
 import AvailabilityView from '@/views/Admin/AvailabilityView.vue'
 import TimeSlotsView from '@/views/Admin/TimeSlotsView.vue'
 import AppointmentsView from '@/views/Admin/AppointmentsView.vue'
+import ProductsView from '@/views/Admin/ProductsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,7 +45,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-      meta: { layout: 'user', requiresAuth: true, role: 'user' },
+      meta: { layout: 'user', requiresAuth: false },
     },
 
     // Admin Routes
@@ -71,6 +72,12 @@ const router = createRouter({
       path: '/appointments',
       name: 'appointments',
       component: AppointmentsView,
+      meta: { layout: 'admin', requiresAuth: true, role: 'admin' },
+    },
+    {
+      path: '/products',
+      name: 'products',
+      component: ProductsView,
       meta: { layout: 'admin', requiresAuth: true, role: 'admin' },
     },
 
