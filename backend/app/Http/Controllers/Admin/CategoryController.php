@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::all();
-        return $this->success($categories, 'Categories List', 200);
+        return $this->success(CategoryResource::collection($categories), 'Categories List', 200);
     }
 
     // Create Category
@@ -26,7 +27,7 @@ class CategoryController extends Controller
             'description' => 'max:255',
         ]);
         $category = Category::create($request->all());
-        return $this->success($category, 'Category Created', 200);
+        return $this->success(new CategoryResource($category), 'Category Created', 200);
     }
 
     // Update Category
@@ -37,7 +38,7 @@ class CategoryController extends Controller
             'description' => 'max:255',
         ]);
         $category->update($request->all());
-        return $this->success($category, 'Category Updated', 200);
+        return $this->success(new CategoryResource($category), 'Category Updated', 200);
     }
 
     // Delete Category

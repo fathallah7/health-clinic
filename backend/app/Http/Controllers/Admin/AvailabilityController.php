@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AvailabilityRequest;
 use App\Http\Requests\Admin\AvailabilityUpdateRequest;
+use App\Http\Resources\AvailabilityResource;
 use App\Models\DoctorAvailability;
 use App\Models\TimeSlot;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponse;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AvailabilityController extends Controller
 {
@@ -19,7 +21,7 @@ class AvailabilityController extends Controller
     public function index()
     {
         $query = DoctorAvailability::with('timeSlots')->latest()->get();
-        return $this->success($query, 'Availability List', 200);
+        return $this->success(AvailabilityResource::collection($query), 'Availability List', 200);
     }
 
     // Create Availability
@@ -30,7 +32,7 @@ class AvailabilityController extends Controller
         $availability = DoctorAvailability::create($validated);
         $this->generateTimeSlots($availability);
 
-        return $this->success($availability, 'Availability Created', 200);
+        return $this->success(new AvailabilityResource($availability), 'Availability Created', 200);
     }
 
     // Update Availability
@@ -38,11 +40,13 @@ class AvailabilityController extends Controller
     {
         $validated = $request->validated();
 
-        $availability->update($validated);
-        $availability->timeSlots()->delete();
-        $this->generateTimeSlots($availability);
+        DB::transaction(function () use ($availability, $validated) {
+            $availability->update($validated);
+            $availability->timeSlots()->delete();
+            $this->generateTimeSlots($availability);
+        });
 
-        return $this->success($availability, 'Availability Updated', 200);
+        return $this->success(new AvailabilityResource($availability), 'Availability Updated', 200);
     }
 
     // Delete Availability

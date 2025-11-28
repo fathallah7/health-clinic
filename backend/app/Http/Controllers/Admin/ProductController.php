@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ProductRequest;
 use App\Http\Requests\Admin\ProductUpdateRequest;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with('category')->get();
-        return $this->success($products, 'Products List', 200);
+        return $this->success(ProductResource::collection($products), 'Products List', 200);
     }
 
     public function store(ProductRequest $request)
@@ -28,13 +29,13 @@ class ProductController extends Controller
             $validated['image'] = $path;
         }
         $product = Product::create($validated);
-        return $this->success($product, 'Product Created', 200);
+        return $this->success(new ProductResource($product), 'Product Created', 200);
     }
 
     // Show Product
     public function show(Product $product)
     {
-        return $this->success($product, 'Product Details', 200);
+        return $this->success(new ProductResource($product), 'Product Details', 200);
     }
 
     // Update Product
@@ -46,7 +47,7 @@ class ProductController extends Controller
             $validated['image'] = $path;
         }
         $product->update($validated);
-        return $this->success($product, 'Product Updated', 200);
+        return $this->success(new ProductResource($product), 'Product Updated', 200);
     }
 
     // Delete Product

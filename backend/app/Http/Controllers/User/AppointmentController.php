@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AppointmentResource;
+use App\Http\Resources\TimeSlotResource;
 use App\Mail\AppointmentConfirmed;
 use App\Models\Appointment;
 use App\Models\TimeSlot;
@@ -20,7 +22,7 @@ class AppointmentController extends Controller
     public function index()
     {
         $timeslots = TimeSlot::all();
-        return $this->success($timeslots, 'Time Slots', 200);
+        return $this->success(TimeSlotResource::collection($timeslots), 'Time Slots', 200);
     }
 
     // Book Appointment
@@ -69,7 +71,7 @@ class AppointmentController extends Controller
 
         Mail::to($patient->email)->queue(new AppointmentConfirmed($appointment));
 
-        return $this->success($appointment, 'Appointment Created', 201);
+        return $this->success(new AppointmentResource($appointment), 'Appointment Created', 201);
     }
 
     // Cancel Appointment

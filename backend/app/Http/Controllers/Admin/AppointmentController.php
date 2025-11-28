@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AppointmentResource;
 use App\Mail\AppointmentCanceledAdmin;
 use App\Models\Appointment;
 use App\Traits\ApiResponse;
@@ -17,7 +18,7 @@ class AppointmentController extends Controller
     public function index()
     {
         $appointments = Appointment::with('patient')->get();
-        return $this->success($appointments, 'Appointments List', 200);
+        return $this->success(AppointmentResource::collection($appointments), 'Appointments List', 200);
     }
 
     // Delete User's Appointment (also free up the time slot)

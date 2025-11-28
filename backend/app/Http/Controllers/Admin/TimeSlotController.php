@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TimeSlotRequest;
 use App\Http\Requests\Admin\TimeSlotUpdateRequest;
+use App\Http\Resources\TimeSlotResource;
 use App\Models\TimeSlot;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class TimeSlotController extends Controller
     public function index()
     {
         $timeslots = TimeSlot::all();
-        return $this->success($timeslots, 'Time Slots List', 200);
+        return $this->success(TimeSlotResource::collection($timeslots), 'Time Slots List', 200);
     }
 
     /**
@@ -27,7 +28,7 @@ class TimeSlotController extends Controller
     {
         $validated = $request->validated();
         $timeslot = TimeSlot::create($validated);
-        return $this->success($timeslot, 'Time Slot Created', 201);
+        return $this->success(new TimeSlotResource($timeslot), 'Time Slot Created', 201);
     }
 
     /**
@@ -37,7 +38,7 @@ class TimeSlotController extends Controller
     {
         $validated = $request->validated();
         $timeSlot->update($validated);
-        return $this->success($timeSlot, 'Time Slot Updated', 200);
+        return $this->success(new TimeSlotResource($timeSlot), 'Time Slot Updated', 200);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CartResource;
 use App\Models\Cart;
 use App\Models\Product;
 use App\Traits\ApiResponse;
@@ -20,7 +21,7 @@ class CartController extends Controller
     {
         $patient = $request->user();
         $cart = $patient->cart()->with('product')->get();
-        return $this->success($cart, 'Cart Items', 200);
+        return $this->success(CartResource::collection($cart), 'Cart Items', 200);
     }
 
     /**
@@ -54,7 +55,7 @@ class CartController extends Controller
                 ]
             );
 
-            return $this->success($cart->load('product'), 'Cart Item Added', 201);
+            return $this->success(new CartResource($cart->load('product')), 'Cart Item Added', 201);
         });
     }
 
@@ -82,7 +83,7 @@ class CartController extends Controller
                 'quantity' => $request->quantity,
             ]);
 
-            return $this->success($cart->load('product'), 'Cart Item Updated', 200);
+            return $this->success(new CartResource($cart->load('product')), 'Cart Item Updated', 200);
         });
     }
 
