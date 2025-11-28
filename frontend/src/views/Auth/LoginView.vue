@@ -23,7 +23,7 @@ const login = async () => {
         isLoading.value = false;
 
         if (response.data.data.user.role === 'admin') {
-            window.location.href = '/admin';
+            window.location.href = '/availability';
         } else {
             window.location.href = '/';
         }

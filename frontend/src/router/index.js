@@ -44,7 +44,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-      meta: { layout: 'user', requiresAuth: false },
+      meta: { layout: 'user', requiresAuth: false, role: 'user' },
     },
     {
       path: '/availability',
@@ -90,18 +90,18 @@ router.beforeEach((to, from, next) => {
 
   if (to.meta.layout === 'auth' && token) {
     if (role === 'admin') {
-      return next('/admin')
+      return next('/availability')
     } else {
       return next('/')
     }
   }
 
   if (to.meta.role === 'admin' && role !== 'admin') {
-    return next('/') 
+    return next('/')
   }
 
   if (to.meta.role === 'user' && role === 'admin') {
-    return next('/admin')
+    return next('/availability')
   }
 
   next()
