@@ -4,31 +4,29 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AppointmentResource;
-use App\Mail\AppointmentCanceledAdmin;
 use App\Models\Appointment;
 use App\Traits\ApiResponse;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
+use App\Services\Appointment\AppointmentService;
 
 class AppointmentController extends Controller
 {
     use ApiResponse;
 
+    public function __construct(protected AppointmentService $appointmentService){}
+
     // Appointments list with patient details
     public function index()
     {
-        $appointments = Appointment::with('patient')->get();
-        return $this->success(AppointmentResource::collection($appointments), 'Appointments List', 200);
+        return $this->success(
+            AppointmentResource::collection($this->appointmentService->getAppointmentsForAdmin()),
+            'Appointments List',
+            200);
     }
 
     // Delete User's Appointment (also free up the time slot)
     public function destroy(Appointment $appointment)
     {
-        DB::transaction(function () use ($appointment) {
-            Mail::to($appointment->patient->email)->send(new AppointmentCanceledAdmin($appointment));
-            $appointment->delete();
-            $appointment->slot()->update(['status' => 'available']);
-        });
+        $this->appointmentService->cancelAppointmentForAdmin($appointment);
         return $this->success(null, 'Appointment deleted successfully', 200);
     }
 }
