@@ -3,48 +3,44 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreCategoryRequest;
+use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use App\Services\Category\CategoryService;
 use App\Traits\ApiResponse;
-use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
     use ApiResponse;
 
+    public function __construct(protected CategoryService $categoryService) {}
+
     // Get All Categories
     public function index()
     {
-        $categories = Category::all();
+        $categories = $this->categoryService->getAllCategories();
         return $this->success(CategoryResource::collection($categories), 'Categories List', 200);
     }
 
     // Create Category
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $request->validate([
-            'name' => 'required|min:3|max:255|unique:categories,name',
-            'description' => 'max:255',
-        ]);
-        $category = Category::create($request->all());
+        $category = $this->categoryService->createCategory($request->validated());
         return $this->success(new CategoryResource($category), 'Category Created', 200);
     }
 
     // Update Category
-    public function update(Request $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $request->validate([
-            "name" => "string|required|min:3|max:255|unique:categories,name,{$category->id}",
-            'description' => 'max:255',
-        ]);
-        $category->update($request->all());
+        $category = $this->categoryService->updateCategory($category, $request->validated());
         return $this->success(new CategoryResource($category), 'Category Updated', 200);
     }
 
     // Delete Category
     public function destroy(Category $category)
     {
-        $category->delete();
+        $this->categoryService->deleteCategory($category);
         return $this->success(null, 'Category Deleted', 200);
     }
 }
