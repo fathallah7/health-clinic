@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\ProductRequest;
 use App\Http\Requests\Admin\ProductUpdateRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Services\Product\ProductService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
@@ -14,21 +15,18 @@ class ProductController extends Controller
 {
     use ApiResponse;
 
+    public function __construct(protected ProductService $productService) {}
+
     // Get All Products with Category
     public function index()
     {
-        $products = Product::with('category')->get();
+        $products = $this->productService->getAllProducts();
         return $this->success(ProductResource::collection($products), 'Products List', 200);
     }
 
     public function store(ProductRequest $request)
     {
-        $validated = $request->validated();
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
-            $validated['image'] = $path;
-        }
-        $product = Product::create($validated);
+        $product = $this->productService->createProduct($request->validated(), $request->file('image'));
         return $this->success(new ProductResource($product), 'Product Created', 200);
     }
 
@@ -41,19 +39,14 @@ class ProductController extends Controller
     // Update Product
     public function update(ProductUpdateRequest $request, Product $product)
     {
-        $validated = $request->validated();
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
-            $validated['image'] = $path;
-        }
-        $product->update($validated);
+        $product = $this->productService->updateProduct($product, $request->validated(), $request->file('image'));
         return $this->success(new ProductResource($product), 'Product Updated', 200);
     }
 
     // Delete Product
     public function destroy(Product $product)
     {
-        $product->delete();
+        $this->productService->deleteProduct($product);
         return $this->success(null, 'Product Deleted', 200);
     }
 }
