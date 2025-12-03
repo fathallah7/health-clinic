@@ -41,9 +41,7 @@ class AvailabilityService
     // Delete availability
     public function deleteAvailability(DoctorAvailability $availability)
     {
-        DB::transaction(function () use ($availability) {
             $availability->delete();
-        });
     }
 
     // Generate time slots based on availability
