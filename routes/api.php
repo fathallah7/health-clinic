@@ -34,7 +34,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // User Time SLot
     Route::get('user/time-slots', [UserTimeSlotController::class, 'index']);
 
-    Route::get('appointments', [AppointmentController::class, 'index']);
     Route::post('appointments', [AppointmentController::class, 'store']);
     Route::delete('appointments/{appointment}', [AppointmentController::class, 'destroy']);
 });
@@ -44,6 +43,6 @@ Route::middleware('auth:sanctum')->group(function () {
 | Public Routes
 |--------------------------------------------------------------------------
 */
-Route::get('time-slots', [AppointmentController::class, 'publicTimeSlots']);
+Route::get('time-slots', [AppointmentController::class, 'index']);
 
 require __DIR__ . '/auth.php';
