@@ -1,53 +1,49 @@
 <?php
 
-use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
-use App\Http\Controllers\Admin\AvailabilityController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\TimeSlotController;
-use App\Http\Controllers\User\AddressController;
-use App\Http\Controllers\User\AppointmentController;
-use App\Http\Controllers\User\CartController;
-use App\Http\Controllers\User\OrderController;
-use App\Http\Controllers\User\UserTimeSlotController;
-use App\Http\Controllers\User\ProductController as UserProductController;
+use App\Http\Controllers\Admin\{
+    AppointmentController as AdminAppointmentController,
+    AvailabilityController,
+    TimeSlotController
+};
+use App\Http\Controllers\User\{
+    AppointmentController,
+    UserTimeSlotController
+};
 use Illuminate\Support\Facades\Route;
 
-// Admin Routes
-Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
-    // Availabilities
-    Route::apiResource('/admin/availability', AvailabilityController::class);
-    // Time Slots
-    Route::apiResource('/admin/time-slot', TimeSlotController::class);
-    // Appointments
-    Route::apiResource('/admin/appointment', AdminAppointmentController::class);
-    // Products
-    Route::apiResource('/admin/product', ProductController::class);
-    // Categories
-    Route::apiResource('/admin/category', CategoryController::class);
-});
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
 
-// User Routes
+Route::prefix('admin')
+    ->middleware(['auth:sanctum', 'isAdmin'])
+    ->group(function () {
+        Route::apiResource('availabilities', AvailabilityController::class);
+        Route::apiResource('time-slots', TimeSlotController::class);
+        Route::apiResource('appointments', AdminAppointmentController::class);
+    });
+
+/*
+|--------------------------------------------------------------------------
+| User Routes
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth:sanctum')->group(function () {
-    // User Time Slots
-    Route::get('/user-time-slot', [UserTimeSlotController::class, 'index']);
-    // Appointments
-    Route::post('/appointment', [AppointmentController::class, 'store']);
-    Route::delete('/appointment/{appointment}', [AppointmentController::class, 'destroy']);
-    // Cart
-    Route::apiResource('/cart', CartController::class);
-    // Orders
-    Route::get('/orders', [OrderController::class, 'index']);
-    Route::post('/checkout', [OrderController::class, 'checkout']);
-    // Address
-    Route::apiResource('/address', AddressController::class);
+    // User Time SLot
+    Route::get('user/time-slots', [UserTimeSlotController::class, 'index']);
+
+    Route::get('appointments', [AppointmentController::class, 'index']);
+    Route::post('appointments', [AppointmentController::class, 'store']);
+    Route::delete('appointments/{appointment}', [AppointmentController::class, 'destroy']);
 });
 
-// Public Routes
-Route::get('/time-slot', [AppointmentController::class, 'index']);
-// Products
-Route::get('/products', [UserProductController::class, 'index']);
-
-
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('time-slots', [AppointmentController::class, 'publicTimeSlots']);
 
 require __DIR__ . '/auth.php';
