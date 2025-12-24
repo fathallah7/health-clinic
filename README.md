@@ -244,69 +244,12 @@ frontend/
 
 ---
 
-## Database Schema
+## Database Schema (ERD)
 
-```
-┌──────────────────────┐          ┌──────────────────────┐
-│ doctor_availabilities│ 1      N │     time_slots       │
-├──────────────────────┤──────────├──────────────────────┤
-│ id (PK)              │          │ id (PK)              │
-│ date                 │          │ availability_id (FK) │
-│ start_time           │          │ date                 │
-│ end_time             │          │ start_time           │
-│ slot_duration        │          │ end_time             │
-│ created_at           │          │ status               │
-│ updated_at           │          │ created_at           │
-└──────────────────────┘          │ updated_at           │
-                                  └──────────────────────┘
-                                             │
-                                             │ 1
-                                             │
-                                             ▼ N
-                                  ┌──────────────────────┐
-                                  │     appointments     │
-                                  ├──────────────────────┤
-                                  │ id (PK)              │
-                                  │ slot_id (FK)         │
-                                  │ patient_id (FK)      │
-                                  │ status               │
-                                  │ notes                │
-                                  │ created_at           │
-                                  │ updated_at           │
-                                  └──────────────────────┘
-                                             │
-                                             │ N
-                                             │
-                                             ▼
-                                  ┌──────────────────────┐
-                                  │        users         │
-                                  ├──────────────────────┤
-                                  │ id (PK)              │
-                                  │ role                 │
-                                  │ name                 │
-                                  │ email                │
-                                  │ phone                │
-                                  │ gender               │
-                                  │ date_of_birth        │
-                                  │ ...                  │
-                                  └──────────────────────┘
-```
+The following diagram represents the Entity Relationship Diagram (ERD)
+for the Clinic Appointment Booking System.
 
-```
-doctor_availabilities
-       │ (1)
-       │
-       ▼ (Many)
-time_slots
-       │ (1)
-       │
-       ▼ (Many)
-appointments ◄─── (Many) patient_id
-                    │
-                    ▼ (1)
-                 users (patients)
-
-```
+<img src="docs/screenshots/database.png" alt="Clinic Appointment ERD" width="900"/>
 
 ---
 
