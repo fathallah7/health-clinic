@@ -68,15 +68,17 @@ Clinic Appointment Booking System is a comprehensive solution that enables patie
 
 ### Admin Dashboard (Doctor View)
 
-|                                                                                                                                           |                                                                                                                               |                                                                                                                                                          |
-| :---------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------: | --- |
-| <img src="docs/screenshots/admin_screen_availability.png" alt="Manage Availability" width="300"/> <br><sub><b>Manage Availability<b><sub> | <img src="docs/screenshots/admin_screen_timeslots.png" alt="Time Slots" width="300"/> <br><sub><b>Manage Time Slots</b></sub> | <img src="docs/screenshots/admin_screen_appointments.png" alt="Appointments List" width="300"/> <br><sub><b>Appointment Details & Patient Info</b></sub> |     |
+| Manage Availability | Manage Time Slots | Appointment Details & Patient Info |
+| :-----------------: | :---------------: | :--------------------------------: |
+| <img src="docs/screenshots/admin_screen_availability.png" width="300"/> <br><sub><b>Manage Availability</b></sub> | <img src="docs/screenshots/admin_screen_timeslots.png" width="300"/> <br><sub><b>Manage Time Slots</b></sub> | <img src="docs/screenshots/admin_screen_appointments.png" width="300"/> <br><sub><b>Appointments List</b></sub> |
+
+---
 
 ### User Dashboard (Patient View)
 
-|                                                                                                                     |                                                                                                                                       |                                                                                                                                     |
-| :-----------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: |
-| <img src="docs/screenshots/user_screen_hero.png" alt="Patient Home" width="300"/> <br><sub><b>Home Screen</b></sub> | <img src="docs/screenshots/user_screen_timeslots.png" alt="Book Appointment" width="300"/> <br><sub><b>Book New Appointment</b></sub> | <img src="docs/screenshots/user_screen_myappointment.png" alt="My Appointments" width="300"/> <br><sub><b>My Appointments</b></sub> |
+| Home Screen | Book New Appointment | My Appointments |
+| :---------: | :------------------: | :-------------: |
+| <img src="docs/screenshots/user_screen_hero.png" width="300"/> <br><sub><b>Home</b></sub> | <img src="docs/screenshots/user_screen_timeslots.png" width="300"/> <br><sub><b>Book Appointment</b></sub> | <img src="docs/screenshots/user_screen_myappointment.png" width="300"/> <br><sub><b>My Appointments</b></sub> |
 
 ---
 
