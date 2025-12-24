@@ -1,7 +1,6 @@
 <script setup>
-import Spinner from '@/components/Spinner.vue'
 import axios from 'axios'
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useToast } from 'vue-toastification'
 
@@ -10,11 +9,8 @@ const isAuth = ref(false)
 
 // Data
 const slots = ref([])
-const products = ref([])
 const myApt = ref(null)
-const cart = ref([])
 const loadingSlots = ref(true)
-const loadingProducts = ref(true)
 const booking = ref(false)
 
 // Modals
