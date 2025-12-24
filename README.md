@@ -23,6 +23,12 @@ Clinic Appointment Booking System is a comprehensive solution that enables patie
 
 ## Features
 
+### Architecture
+
+- **RESTful API**
+- **Separation of concerns** (Admin / Patient)
+- **Token-based authentication**
+
 ### Authentication & Security
 
 - **User Registration** with email verification
@@ -62,9 +68,9 @@ Clinic Appointment Booking System is a comprehensive solution that enables patie
 
 ### Admin Dashboard (Doctor View)
 
-|                                                                                                                                                       |                                                                                                                                              |                                                                                                                                  |
-| :---------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------: |
-| <img src="docs/screenshots/admin_screen_availability.png" alt="Manage Availability" width="300"/> <br><sub><b>Manage Availability<b><sub>     | <img src="docs/screenshots/admin_screen_timeslots.png" alt="Time Slots" width="300"/> <br><sub><b>Manage Time Slots</b></sub> | <img src="docs/screenshots/admin_screen_appointments.png" alt="Appointments List" width="300"/> <br><sub><b>Appointment Details & Patient Info</b></sub>                                                                                                                                             |                                                                                                                           |
+|                                                                                                                                           |                                                                                                                               |                                                                                                                                                          |
+| :---------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------: | --- |
+| <img src="docs/screenshots/admin_screen_availability.png" alt="Manage Availability" width="300"/> <br><sub><b>Manage Availability<b><sub> | <img src="docs/screenshots/admin_screen_timeslots.png" alt="Time Slots" width="300"/> <br><sub><b>Manage Time Slots</b></sub> | <img src="docs/screenshots/admin_screen_appointments.png" alt="Appointments List" width="300"/> <br><sub><b>Appointment Details & Patient Info</b></sub> |     |
 
 ### User Dashboard (Patient View)
 
@@ -172,6 +178,66 @@ All API responses follow a consistent format:
   "message": "Error description",
   "errors": {}
 }
+```
+
+---
+
+## Project Structure
+
+### Backend - Laravel API
+
+```
+backend/
+├── app/
+│   ├── Exceptions/           # Exception Handler
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Admin/        # Admin
+│   │   │   ├── Auth/         # Authentication logic
+│   │   │   └── User/         # Patient
+│   │   ├── Middleware/
+│   │   │   └── Admin/
+│   │   ├── Requests/
+│   │   │   ├── Admin/
+│   │   │   ├── Auth/
+│   │   │   └── User/
+│   │   └── Resources/        # API response formatting
+│   ├── Mail/                 # Email notifications
+│   ├── Models/               # Eloquent models
+│   ├── Policies/             # Authorization policies
+│   ├── Services/             # Business logic layer
+│   └── Traits/
+├── routes/
+│   ├── api.php                # API routes
+│   ├── auth.php               # Auth routes
+│   └── web.php
+├── database/
+│   ├── migrations/
+│   ├── factories/
+│   └── seeders/
+
+```
+
+### Frontend - Vue.js
+
+```
+frontend/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   └── Admin/
+│   ├── layouts/
+│   │   ├── Admin/              # Admin dashboard layouts
+│   │   ├── User/               # Patient layouts
+│   │   └── AuthLayout.vue
+│   ├── router/
+│   │   └── index.js            # Vue Router configuration
+│   ├── views/
+│   │   ├── Admin/              # Admin pages
+│   │   ├── Auth/
+│   │   └── User/               # Patient pages
+│   ├── App.vue
+│   └── main.js
 ```
 
 ---
