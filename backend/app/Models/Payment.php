@@ -13,7 +13,7 @@ class Payment extends Model
         'currency',
         'status',
         'stripe_response'
-     ];
+    ];
 
     // Relationships
     public function appointment()

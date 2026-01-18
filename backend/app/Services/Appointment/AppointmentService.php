@@ -39,7 +39,7 @@ class AppointmentService
     }
 
     // Book an appointment for a patient
-    public function bookAppointment($patient, $slotId): array
+    public function bookAppointment($patient, $slotId)
     {
         $exsistingAppointment =
             Appointment::query()->where('patient_id', $patient->id)
@@ -91,8 +91,8 @@ class AppointmentService
                 ],
                 'customer_creation' => 'always',
                 'mode' => 'payment',
-                'success_url' => 'https://abdullah.top',
-                'cancel_url' => 'https://abdullah.top',
+                'success_url' => 'http://localhost:5173/#appointments',
+                'cancel_url' => 'http://localhost:5173/#appointments',
             ]);
 
             $payment = Payment::create([
@@ -105,7 +105,6 @@ class AppointmentService
 
             return [
                 'appointment' => $appointment,
-                'payment' => $payment,
                 'checkout_url' => $checkout_session->url,
             ];
         } catch (\Throwable $th) {
