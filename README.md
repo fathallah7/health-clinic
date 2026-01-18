@@ -18,7 +18,7 @@
 
 ## Overview
 
-Clinic Appointment Booking System is a comprehensive solution that enables patients to book appointments with doctors seamlessly. The system features role-based access control (Admin/Patient), dynamic time slot management, **secure online payment processing via Stripe**, and a complete authentication system with email verification and password recovery.
+Clinic Appointment Booking System is a comprehensive solution that enables patients to book appointments with doctors seamlessly. The system features role-based access control (Admin/Patient), dynamic time slot management, **secure online payment processing via Stripe**, and a complete authentication system
 
 ---
 
@@ -45,7 +45,6 @@ Clinic Appointment Booking System is a comprehensive solution that enables patie
 - **Stripe Payment Gateway** - Secure online payment processing
 - **Consultation Fee Payment** - Patients pay when booking appointments
 - **Payment Confirmation** - Instant booking confirmation after successful payment
-- **Refund Support** - Automatic refund processing for cancelled appointments
 - **Webhook Integration** - Real-time payment status updates
 
 ### Admin Dashboard
@@ -53,14 +52,13 @@ Clinic Appointment Booking System is a comprehensive solution that enables patie
 - **Availability Management** - Set working hours and dates
 - **Dynamic Time Slot Generation** - Auto-generate slots based on duration
 - **Appointment Overview** - View and manage all bookings
-- **Refund Management** - Process refunds for cancelled appointments
 - **CRUD Operations** for all resources
 
 ### Patient Features
 
 - **Browse Available Slots** - View all open time slots
 - **Book Appointments** - Reserve time slots after payment confirmation
-- **Cancel Bookings** - Cancel appointments with automatic refund
+- **Cancel Bookings** - Cancel appointments
 - **Secure Payment** - Pay consultation fees via Stripe
 - **Payment Receipts** - Download payment invoices
 
@@ -148,7 +146,6 @@ Clinic Appointment Booking System is a comprehensive solution that enables patie
 | ------ | -------------------------- | -------------------- |
 | GET    | `/api/admin/payments`      | List all payments    |
 | GET    | `/api/admin/payments/{id}` | View payment details |
-| POST   | `/api/admin/refunds/{id}`  | Process refund       |
 
 ---
 
@@ -191,7 +188,7 @@ Authorization: Bearer {token}
 }
 ```
 
-#### Cancel Appointment (With Refund)
+#### Cancel Appointment
 
 ```http
 DELETE /api/appointments/{id}
@@ -209,7 +206,6 @@ POST /api/webhooks/stripe
 This endpoint handles real-time payment status updates from Stripe, including:
 
 - Payment confirmations
-- Refund notifications
 - Failed payment alerts
 
 ---
@@ -270,7 +266,6 @@ backend/
 │   │   ├── Controllers/
 │   │   │   ├── Admin/        # Admin controllers
 │   │   │   ├── Auth/         # Authentication logic
-│   │   │   ├── Payment/      # Payment processing
 │   │   │   └── User/         # Patient controllers
 │   │   ├── Middleware/
 │   │   │   └── Admin/
@@ -329,10 +324,9 @@ for the Clinic Appointment Booking System.
 
 - **users** - User accounts (patients and admins)
 - **availabilities** - Doctor availability schedules
-- **time_slots** - Available appointment slots with pricing
+- **time_slots** - Available appointment slots
 - **appointments** - Booked appointments
 - **payments** - Payment transactions
-- **refunds** - Refund records
 
 ---
 
@@ -382,17 +376,16 @@ DB_USERNAME=root
 DB_PASSWORD=your_password
 
 # Stripe Configuration
-STRIPE_KEY=pk_test_xxxxxxxxxxxxxxxxxxxxx
 STRIPE_SECRET=sk_test_xxxxxxxxxxxxxxxxxxxxx
 STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxx
 
 # Mail Configuration
 MAIL_MAILER=smtp
+MAIL_ENCRYPTION=tls
 MAIL_HOST=smtp.mailtrap.io
-MAIL_PORT=2525
+MAIL_PORT=587
 MAIL_USERNAME=your_username
 MAIL_PASSWORD=your_password
-MAIL_ENCRYPTION=tls
 MAIL_FROM_ADDRESS=noreply@clinic.com
 MAIL_FROM_NAME="${APP_NAME}"
 ```
@@ -401,11 +394,11 @@ MAIL_FROM_NAME="${APP_NAME}"
 
 1. Create a Stripe account at https://stripe.com
 2. Go to **Developers** → **API keys**
-3. Copy your **Publishable key** and **Secret key**
+3. Copy your **Secret key**
 4. For webhooks:
    - Go to **Developers** → **Webhooks**
    - Add endpoint: `http://your-domain.com/api/webhooks/stripe`
-   - Select events: `payment_intent.succeeded`, `payment_intent.payment_failed`, `charge.refunded`
+   - Select events: `payment_intent.succeeded`, `payment_intent.payment_failed`
    - Copy the **Signing secret**
 
 #### 5. Database Setup
@@ -493,10 +486,10 @@ User enters card details → Stripe processes payment → Webhook confirms payme
 Payment confirmed → Appointment created → Confirmation email sent
 ```
 
-### 4. Cancellation & Refund
+### 4. Cancellation
 
 ```
-User cancels appointment → Refund initiated → Refund processed → Confirmation email
+User cancels appointment → Confirmation email
 ```
 
 ---
