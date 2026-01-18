@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios'
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useToast } from 'vue-toastification'
 
@@ -18,26 +18,44 @@ const showApt = ref(false)
 
 // API Functions
 const fetchSlots = async () => {
-    try { slots.value = (await axios.get('/time-slots')).data.data || [] }
-    catch { toast.error('Failed to load appointments') }
-    finally { loadingSlots.value = false }
+    try {
+        slots.value = (await axios.get('/time-slots')).data.data || []
+    } catch {
+        toast.error('Failed to load appointments')
+    } finally {
+        loadingSlots.value = false
+    }
 }
 
 const fetchMyApt = async () => {
-    try { myApt.value = (await axios.get('/user/time-slots')).data.data[0] || null }
-    catch { }
+    try {
+        myApt.value = (await axios.get('/user/time-slots')).data.data[0] || null
+    } catch { }
 }
 
 const book = async (id) => {
     if (!isAuth.value) return toast.warning('Please sign in first')
+
     try {
         booking.value = true
-        await axios.post('/appointments', { slot_id: id })
-        await Promise.all([fetchSlots(), fetchMyApt()])
-        toast.success('Appointment booked!')
-        showApt.value = true
-    } catch (e) { toast.error(e.response?.data?.message || 'Booking failed') }
-    finally { booking.value = false }
+
+        const response = await axios.post('/appointments', { slot_id: id })
+
+        const checkoutUrl = response.data.data?.checkout_url || response.data.checkout_url
+
+        if (checkoutUrl) {
+            toast.success('Reservation initiated! Redirecting to payment...')
+            window.location.href = checkoutUrl
+        } else {
+            toast.error('Payment link not found')
+            booking.value = false
+        }
+    } catch (e) {
+        toast.error(e.response?.data?.message || 'Booking failed')
+        booking.value = false
+    }
+    // ملحوظة: لم نضع booking.value = false في finally
+    // لأننا نريد أن يظل الزر في حالة تحميل حتى يتم التوجيه لصفحة الدفع
 }
 
 const cancel = async () => {
@@ -47,7 +65,9 @@ const cancel = async () => {
         await Promise.all([fetchSlots(), fetchMyApt()])
         toast.success('Cancelled')
         showApt.value = false
-    } catch { toast.error('Failed') }
+    } catch {
+        toast.error('Failed')
+    }
 }
 
 const logout = () => {
@@ -60,10 +80,14 @@ const logout = () => {
     toast.success('Logged out successfully')
 }
 
-const fmt = (d) => new Date(d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+const fmt = (d) =>
+    new Date(d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
 
 onMounted(() => {
-    if (localStorage.token) { isAuth.value = true; fetchMyApt() }
+    if (localStorage.token) {
+        isAuth.value = true
+        fetchMyApt()
+    }
     fetchSlots()
 })
 </script>
@@ -134,12 +158,12 @@ onMounted(() => {
 
                 <div class="space-y-4">
                     <h1 class="text-6xl lg:text-7xl font-bold leading-tight text-gray-900">
-                        Your Health,<br>
+                        Your Health,<br />
                         <span class="text-teal-600">Our Priority</span>
                     </h1>
                     <p class="text-xl text-gray-600 leading-relaxed max-w-xl">
-                        Experience world-class medical care with compassion and dedication.
-                        Book your consultation today.
+                        Experience world-class medical care with compassion and dedication. Book your
+                        consultation today.
                     </p>
                 </div>
 
@@ -232,9 +256,7 @@ onMounted(() => {
                     </svg>
                     <span class="text-sm font-medium text-gray-700">Appointments</span>
                 </div>
-                <h2 class="text-4xl sm:text-5xl font-bold text-gray-900">
-                    Book Your Visit
-                </h2>
+                <h2 class="text-4xl sm:text-5xl font-bold text-gray-900">Book Your Visit</h2>
                 <p class="text-gray-600 text-lg max-w-2xl mx-auto">
                     Choose a convenient time slot for your consultation
                 </p>
@@ -247,9 +269,9 @@ onMounted(() => {
             <div v-else class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 <div v-for="s in slots" :key="s.id" class="group relative p-6 rounded-2xl transition-all duration-300"
                     :class="s.status === 'available'
-                        ? 'bg-white border-2 border-gray-100 hover:border-teal-500 hover:shadow-lg cursor-pointer'
-                        : 'bg-gray-50 border-2 border-gray-100 opacity-60'">
-
+                            ? 'bg-white border-2 border-gray-100 hover:border-teal-500 hover:shadow-lg cursor-pointer'
+                            : 'bg-gray-50 border-2 border-gray-100 opacity-60'
+                        ">
                     <div v-if="s.status === 'available'"
                         class="absolute top-3 right-3 w-2 h-2 bg-green-500 rounded-full">
                     </div>
@@ -331,14 +353,18 @@ onMounted(() => {
                                 </div>
                             </div>
 
-                            <div
-                                class="flex items-center gap-2 text-sm font-medium text-teal-700 bg-white/70 rounded-xl px-4 py-2.5">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="flex items-center gap-2 text-sm font-mediu bg-white/70 rounded-xl px-4 py-2.5"
+                                :class="[
+                                    myApt.status === 'confirmed'
+                                        ? 'bg-teal-50 text-teal-700'
+                                        : 'bg-red-50 text-red-700',
+                                ]">
+                                <svg v-if="myApt.status == 'confirmed'" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                         clip-rule="evenodd" />
                                 </svg>
-                                <span>Confirmed</span>
+                                <span>{{ myApt.status }}</span>
                             </div>
                         </div>
 

@@ -1,13 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import LoginView from '@/views/Auth/LoginView.vue'
-import ForgetPasswordView from '@/views/Auth/ForgetPasswordView.vue'
-import ResetPasswordView from '@/views/Auth/ResetPasswordView.vue'
-import HomeView from '@/views/User/HomeView.vue'
-import SignupView from '@/views/Auth/SignupView.vue'
-import AvailabilityView from '@/views/Admin/AvailabilityView.vue'
-import TimeSlotsView from '@/views/Admin/TimeSlotsView.vue'
 import AppointmentsView from '@/views/Admin/AppointmentsView.vue'
+import AvailabilityView from '@/views/Admin/AvailabilityView.vue'
+import PaymentsView from '@/views/Admin/PaymentsView.vue'
+import TimeSlotsView from '@/views/Admin/TimeSlotsView.vue'
+import ForgetPasswordView from '@/views/Auth/ForgetPasswordView.vue'
+import LoginView from '@/views/Auth/LoginView.vue'
+import ResetPasswordView from '@/views/Auth/ResetPasswordView.vue'
+import SignupView from '@/views/Auth/SignupView.vue'
+import HomeView from '@/views/User/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,23 +46,31 @@ const router = createRouter({
       component: HomeView,
       meta: { layout: 'user', requiresAuth: false, role: 'user' },
     },
+    // admin availability route
     {
       path: '/availability',
       name: 'availability',
       component: AvailabilityView,
       meta: { layout: 'admin', requiresAuth: true, role: 'admin' },
     },
-    // time slots route
+    // admin time slots route
     {
       path: '/timeslots',
       name: 'timeslots',
       component: TimeSlotsView,
       meta: { layout: 'admin', requiresAuth: true, role: 'admin' },
     },
+    // admin appointments route
     {
       path: '/appointments',
       name: 'appointments',
       component: AppointmentsView,
+      meta: { layout: 'admin', requiresAuth: true, role: 'admin' },
+    },
+    {
+      path: '/payments',
+      name: 'payments',
+      component: PaymentsView,
       meta: { layout: 'admin', requiresAuth: true, role: 'admin' },
     },
 

@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\{
     AvailabilityController,
     TimeSlotController
 };
+use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\User\{
     AppointmentController,
     UserTimeSlotController
@@ -20,8 +21,11 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('admin')
     ->middleware(['auth:sanctum', 'isAdmin'])
     ->group(function () {
+        // Availabilities
         Route::apiResource('availabilities', AvailabilityController::class);
+        // Time Slots
         Route::apiResource('time-slots', TimeSlotController::class);
+        // Appointments
         Route::apiResource('appointments', AdminAppointmentController::class);
     });
 
@@ -33,7 +37,7 @@ Route::prefix('admin')
 Route::middleware('auth:sanctum')->group(function () {
     // User Time SLot
     Route::get('user/time-slots', [UserTimeSlotController::class, 'index']);
-
+    // Appointment -> book & cancel
     Route::post('appointments', [AppointmentController::class, 'store']);
     Route::delete('appointments/{appointment}', [AppointmentController::class, 'destroy']);
 });
@@ -43,6 +47,10 @@ Route::middleware('auth:sanctum')->group(function () {
 | Public Routes
 |--------------------------------------------------------------------------
 */
+// Get All Time Slots
 Route::get('time-slots', [AppointmentController::class, 'index']);
+
+// Strip Webhook
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
 
 require __DIR__ . '/auth.php';

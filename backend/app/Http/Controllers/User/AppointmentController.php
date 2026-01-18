@@ -32,7 +32,6 @@ class AppointmentController extends Controller
             $result = $this->appointmentService->bookAppointment($request->user(), $request->input('slot_id'));
             return $this->success([
                 'appointment' => new AppointmentResource($result['appointment']),
-                'payment' => new PaymentResource($result['payment']),
                 'checkout_url' => $result['checkout_url'],
             ], 'Appointment Created', 201);
         } catch (\Exception $e) {
