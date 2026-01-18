@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
+import { computed, onMounted, ref } from 'vue'
 
 const appointments = ref([])
 const loading = ref(true)
@@ -16,10 +16,11 @@ const filteredAppointments = computed(() => {
     // Filter by search query (patient name, email, phone)
     if (searchQuery.value) {
         const query = searchQuery.value.toLowerCase()
-        filtered = filtered.filter(app =>
-            app.patient.name.toLowerCase().includes(query) ||
-            app.patient.email.toLowerCase().includes(query) ||
-            app.patient.phone.toLowerCase().includes(query)
+        filtered = filtered.filter(
+            (app) =>
+                app.patient.name.toLowerCase().includes(query) ||
+                app.patient.email.toLowerCase().includes(query) ||
+                app.patient.phone.toLowerCase().includes(query),
         )
     }
 
@@ -72,7 +73,7 @@ const formatDate = (dateString) => {
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
     })
 }
 
@@ -160,7 +161,11 @@ onMounted(() => {
             <i class="fa-solid fa-calendar-xmark text-6xl text-gray-300 mb-4"></i>
             <h3 class="text-xl font-semibold text-gray-700 mb-2">No Appointments Found</h3>
             <p class="text-gray-500">
-                {{ searchQuery || filterStatus !== 'all' ? 'Try adjusting your filters' : 'There are no appointments at the moment.' }}
+                {{
+                    searchQuery || filterStatus !== 'all'
+                        ? 'Try adjusting your filters'
+                        : 'There are no appointments at the moment.'
+                }}
             </p>
         </div>
 
@@ -186,6 +191,10 @@ onMounted(() => {
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                                 <i class="fa-solid fa-calendar mr-2"></i>Created At
                             </th>
+                            <!-- status-->
+                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                <i class="fa-solid fa-chart-pie mr-2"></i>Status
+                            </th>
                             <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
                                 Actions
                             </th>
@@ -208,8 +217,11 @@ onMounted(() => {
                                 <div class="flex items-center">
                                     <div
                                         class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center mr-3 shadow-md">
-                                        <i
-                                            :class="['fa-solid', getGenderIcon(appointment.patient.gender), 'text-white text-lg']"></i>
+                                        <i :class="[
+                                            'fa-solid',
+                                            getGenderIcon(appointment.patient.gender),
+                                            'text-white text-lg',
+                                        ]"></i>
                                     </div>
                                     <div>
                                         <div class="text-sm font-semibold text-gray-900">
@@ -248,6 +260,16 @@ onMounted(() => {
                                 <div class="text-sm text-gray-700">
                                     {{ formatDate(appointment.created_at) }}
                                 </div>
+                            </td>
+
+                            <!-- Status -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-3 py-1 rounded-lg text-sm font-semibold" :class="appointment.status === 'pending' || appointment.status === 'cancelled'
+                                        ? 'bg-red-100 text-red-700'
+                                        : 'bg-green-100 text-green-700'
+                                    ">
+                                    {{ appointment.status }}
+                                </span>
                             </td>
 
                             <!-- Actions -->

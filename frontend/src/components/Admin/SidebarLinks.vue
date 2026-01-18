@@ -72,30 +72,6 @@ onMounted(() => {
             </ul>
         </div>
 
-        <!-- System Group -->
-        <div class="mb-8">
-            <div class="flex items-center gap-2 mb-4 px-3">
-                <div class="h-0.5 w-8 bg-gradient-to-r from-purple-500 to-transparent rounded-full"></div>
-                <h3 class="text-xs font-bold uppercase text-purple-600 tracking-wider">System</h3>
-            </div>
-
-            <ul class="space-y-1.5">
-
-                <!-- Payments -->
-                <li class="menu-item" style="--delay: 0.1s">
-                    <RouterLink @click="$emit('link-clicked')" to="/payments" class="menu-link group"
-                        :class="{ 'active': $route.path === '/payments' }">
-                        <div class="icon-wrapper">
-                            <i class="fa-solid fa-coins text-lg"></i>
-                        </div>
-                        <span class="link-text">Payments</span>
-                        <div class="link-indicator"></div>
-                    </RouterLink>
-                </li>
-
-            </ul>
-        </div>
-
         <!-- Logout Section -->
         <div class="mt-auto pt-4 border-t border-gray-200">
             <ul>
