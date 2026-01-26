@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import AppointmentsView from '@/views/Admin/AppointmentsView.vue'
 import AvailabilityView from '@/views/Admin/AvailabilityView.vue'
-import PaymentsView from '@/views/Admin/PaymentsView.vue'
 import TimeSlotsView from '@/views/Admin/TimeSlotsView.vue'
 import ForgetPasswordView from '@/views/Auth/ForgetPasswordView.vue'
 import LoginView from '@/views/Auth/LoginView.vue'
@@ -65,12 +64,6 @@ const router = createRouter({
       path: '/appointments',
       name: 'appointments',
       component: AppointmentsView,
-      meta: { layout: 'admin', requiresAuth: true, role: 'admin' },
-    },
-    {
-      path: '/payments',
-      name: 'payments',
-      component: PaymentsView,
       meta: { layout: 'admin', requiresAuth: true, role: 'admin' },
     },
 
