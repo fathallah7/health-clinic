@@ -1,0 +1,787 @@
+{
+	"info": {
+		"_postman_id": "c51a0ca6-8f30-47de-8c12-2e589f08876f",
+		"name": "Doctor Appointment Booking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "43091471"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "accept/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Abdo\",\r\n    \"email\":\"abdso4@fmail.com\",\r\n    \"phone\": \"01222222222\",\r\n    \"password\":\"aaaaaaaa\",\r\n    \"password_confirmation\":\"aaaaaaaa\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/register"
+					},
+					"response": [
+						{
+							"name": "register",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "accept/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"Abdo\",\r\n    \"email\":\"abdso4@fmail.com\",\r\n    \"phone\": \"01222222222\",\r\n    \"password\":\"aaaaaaaa\",\r\n    \"password_confirmation\":\"aaaaaaaa\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseURL}}/api/register"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.25.2"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.16"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Dec 2025 09:49:53 GMT"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Registration successful\",\n    \"data\": {\n        \"token\": \"15|rYaQ8SzhXcGJtjQaScFowWxTKE12MQOQip5b9n1H3cd2028c\",\n        \"user\": {\n            \"id\": 4,\n            \"name\": \"Abdo\",\n            \"email\": \"abdso4@fmail.com\",\n            \"role\": \"patient\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "accept/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"admin@doctor.com\",\r\n    \"password\":\"admin123\"\r\n}\r\n\r\n// {\r\n//     \"email\":\"a@a.com\",\r\n//     \"password\":\"aaaaaaaa\"\r\n// }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/login"
+					},
+					"response": [
+						{
+							"name": "login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "accept/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"abdullahxoff@gmail.com\",\r\n    \"password\":\"aaaaaaaa\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseURL}}/api/login"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.25.2"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.16"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Dec 2025 09:50:31 GMT"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Login successful\",\n    \"data\": {\n        \"token\": \"16|PmHiG4iagec3mFHOgFz4QCg2qWonMz2zemcwP4Ct3f2eb186\",\n        \"user\": {\n            \"id\": 3,\n            \"name\": \"Abdullah Mohamed\",\n            \"email\": \"abdullahxoff@gmail.com\",\n            \"role\": \"patient\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "reset-password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "accept/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"abdso@fmail.com\",\r\n    \"token\":\"2e73df1d8b2686f2a96bb3bf466669757f4ce88a3280b7f7a2e6b07b406b905c\",\r\n    \"password\":\"aaaaaaaa\",\r\n    \"password_confirmation\":\"aaaaaaaa\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/reset-password"
+					},
+					"response": []
+				},
+				{
+					"name": "forgot-password (link)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "accept/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"abdso@fmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/forgot-password"
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "7|EYXu9UyCJdZ85XR7DBwtzNLdNAxcHKMpd2P6Eb9C5508f2ad"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "accept/json",
+								"type": "text"
+							}
+						],
+						"url": "{{baseURL}}/api/logout"
+					},
+					"response": []
+				},
+				{
+					"name": "email/verification-notification",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "8|Kyqr5gHJNPgRDZhQ8UfAku8FOcMDV5zQnEEpOXYZ1dd36694"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "accept/json",
+								"type": "text"
+							}
+						],
+						"url": "{{baseURL}}/api/email/verification-notification"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Availability",
+					"item": [
+						{
+							"name": "admin/availabilities",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{adminToken}}"
+									}
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "accept/json",
+										"type": "text"
+									}
+								],
+								"url": "{{baseURL}}/api/admin/availabilities"
+							},
+							"response": [
+								{
+									"name": "admin/availability",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "accept/json",
+												"type": "text"
+											}
+										],
+										"url": "{{baseURL}}/api/admin/availability"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Host",
+											"value": "127.0.0.1:8000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.2.12"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 17 Dec 2025 10:46:49 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Origin"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"message\": \"Availability List\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"12:30:00\",\n            \"end_time\": \"19:30:00\",\n            \"slot_duration\": 30,\n            \"time_slots\": [\n                {\n                    \"id\": 1,\n                    \"date\": \"2025-12-20\",\n                    \"start_time\": \"12:30:00\",\n                    \"end_time\": \"13:00:00\",\n                    \"status\": \"available\"\n                },\n                {\n                    \"id\": 2,\n                    \"date\": \"2025-12-20\",\n                    \"start_time\": \"13:00:00\",\n                    \"end_time\": \"13:30:00\",\n                    \"status\": \"available\"\n                },\n                {\n                    \"id\": 3,\n                    \"date\": \"2025-12-20\",\n                    \"start_time\": \"13:30:00\",\n                    \"end_time\": \"14:00:00\",\n                    \"status\": \"available\"\n                },\n                {\n                    \"id\": 4,\n                    \"date\": \"2025-12-20\",\n                    \"start_time\": \"14:00:00\",\n                    \"end_time\": \"14:30:00\",\n                    \"status\": \"available\"\n                },\n                {\n                    \"id\": 5,\n                    \"date\": \"2025-12-20\",\n                    \"start_time\": \"14:30:00\",\n                    \"end_time\": \"15:00:00\",\n                    \"status\": \"available\"\n                },\n                {\n                    \"id\": 6,\n                    \"date\": \"2025-12-20\",\n                    \"start_time\": \"15:00:00\",\n                    \"end_time\": \"15:30:00\",\n                    \"status\": \"available\"\n                },\n                {\n                    \"id\": 7,\n                    \"date\": \"2025-12-20\",\n                    \"start_time\": \"15:30:00\",\n                    \"end_time\": \"16:00:00\",\n                    \"status\": \"available\"\n                },\n                {\n                    \"id\": 8,\n                    \"date\": \"2025-12-20\",\n                    \"start_time\": \"16:00:00\",\n                    \"end_time\": \"16:30:00\",\n                    \"status\": \"available\"\n                },\n                {\n                    \"id\": 9,\n                    \"date\": \"2025-12-20\",\n                    \"start_time\": \"16:30:00\",\n                    \"end_time\": \"17:00:00\",\n                    \"status\": \"available\"\n                },\n                {\n                    \"id\": 10,\n                    \"date\": \"2025-12-20\",\n                    \"start_time\": \"17:00:00\",\n                    \"end_time\": \"17:30:00\",\n                    \"status\": \"available\"\n                },\n                {\n                    \"id\": 11,\n                    \"date\": \"2025-12-20\",\n                    \"start_time\": \"17:30:00\",\n                    \"end_time\": \"18:00:00\",\n                    \"status\": \"available\"\n                },\n                {\n                    \"id\": 12,\n                    \"date\": \"2025-12-20\",\n                    \"start_time\": \"18:00:00\",\n                    \"end_time\": \"18:30:00\",\n                    \"status\": \"available\"\n                },\n                {\n                    \"id\": 13,\n                    \"date\": \"2025-12-20\",\n                    \"start_time\": \"18:30:00\",\n                    \"end_time\": \"19:00:00\",\n                    \"status\": \"available\"\n                },\n                {\n                    \"id\": 14,\n                    \"date\": \"2025-12-20\",\n                    \"start_time\": \"19:00:00\",\n                    \"end_time\": \"19:30:00\",\n                    \"status\": \"available\"\n                }\n            ]\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "admin/availabilities",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "1|nG9JxF4dW5wKJSUgCbg8sPFJMLwXRNdmEUsA74G7468c6738"
+									}
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "accept/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"date\": \"2025-11-17\",\r\n  \"start_time\": \"10:00\",\r\n  \"end_time\": \"14:00\",\r\n  \"slot_duration\": 30\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseURL}}/api/admin/availabilities"
+							},
+							"response": []
+						},
+						{
+							"name": "admin/availabilities/id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "3|EiSKCVzoxEmgL61MNgLDe69BkOcLGyulRv5hAnxS54151007"
+									}
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "accept/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"date\": \"2025-10-05\",\r\n  \"start_time\": \"10:00\",\r\n  \"end_time\": \"12:00\",\r\n  \"slot_duration\": 30\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseURL}}/api/admin/availabilities/8"
+							},
+							"response": []
+						},
+						{
+							"name": "admin/availabilities/id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "3|EiSKCVzoxEmgL61MNgLDe69BkOcLGyulRv5hAnxS54151007"
+									}
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "accept/json",
+										"type": "text"
+									}
+								],
+								"url": "{{baseURL}}/api/admin/availabilities/8"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Time Slots",
+					"item": [
+						{
+							"name": "/admin/time-slots",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{adminToken}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": "{{baseURL}}/api/admin/time-slots"
+							},
+							"response": [
+								{
+									"name": "/admin/time-slot",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseURL}}/api/admin/time-slot"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Host",
+											"value": "127.0.0.1:8000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.2.12"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 17 Dec 2025 10:47:41 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Origin"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"message\": \"Time Slots List\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"12:30:00\",\n            \"end_time\": \"13:00:00\",\n            \"status\": \"available\"\n        },\n        {\n            \"id\": 2,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"13:00:00\",\n            \"end_time\": \"13:30:00\",\n            \"status\": \"available\"\n        },\n        {\n            \"id\": 3,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"13:30:00\",\n            \"end_time\": \"14:00:00\",\n            \"status\": \"available\"\n        },\n        {\n            \"id\": 4,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"14:00:00\",\n            \"end_time\": \"14:30:00\",\n            \"status\": \"available\"\n        },\n        {\n            \"id\": 5,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"14:30:00\",\n            \"end_time\": \"15:00:00\",\n            \"status\": \"available\"\n        },\n        {\n            \"id\": 6,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"15:00:00\",\n            \"end_time\": \"15:30:00\",\n            \"status\": \"available\"\n        },\n        {\n            \"id\": 7,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"15:30:00\",\n            \"end_time\": \"16:00:00\",\n            \"status\": \"available\"\n        },\n        {\n            \"id\": 8,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"16:00:00\",\n            \"end_time\": \"16:30:00\",\n            \"status\": \"available\"\n        },\n        {\n            \"id\": 9,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"16:30:00\",\n            \"end_time\": \"17:00:00\",\n            \"status\": \"available\"\n        },\n        {\n            \"id\": 10,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"17:00:00\",\n            \"end_time\": \"17:30:00\",\n            \"status\": \"available\"\n        },\n        {\n            \"id\": 11,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"17:30:00\",\n            \"end_time\": \"18:00:00\",\n            \"status\": \"available\"\n        },\n        {\n            \"id\": 12,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"18:00:00\",\n            \"end_time\": \"18:30:00\",\n            \"status\": \"available\"\n        },\n        {\n            \"id\": 13,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"18:30:00\",\n            \"end_time\": \"19:00:00\",\n            \"status\": \"available\"\n        },\n        {\n            \"id\": 14,\n            \"date\": \"2025-12-20\",\n            \"start_time\": \"19:00:00\",\n            \"end_time\": \"19:30:00\",\n            \"status\": \"available\"\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "admin/time-slots",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "1|nG9JxF4dW5wKJSUgCbg8sPFJMLwXRNdmEUsA74G7468c6738"
+									}
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "accept/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"start_time\": \"10:30\",\r\n  \"end_time\": \"12:00\",\r\n  \"date\": \"2025-11-30\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseURL}}/api/admin/time-slots"
+							},
+							"response": []
+						},
+						{
+							"name": "/admin/time-slots/id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "1|nG9JxF4dW5wKJSUgCbg8sPFJMLwXRNdmEUsA74G7468c6738"
+									}
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "accept/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"start_time\": \"10:30\",\r\n  \"end_time\": \"12:00\",\r\n  \"date\": \"2025-11-29\",\r\n  \"status\": \"available\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseURL}}/api/admin/time-slots/62"
+							},
+							"response": []
+						},
+						{
+							"name": "/admin/time-slots/id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "1|nG9JxF4dW5wKJSUgCbg8sPFJMLwXRNdmEUsA74G7468c6738"
+									}
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "accept/json",
+										"type": "text"
+									}
+								],
+								"url": "{{baseURL}}/api/admin/time-slots/62"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Appointments",
+					"item": [
+						{
+							"name": "/admin/appointments",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{adminToken}}"
+									}
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "accept/json",
+										"type": "text"
+									}
+								],
+								"url": "{{baseURL}}/api/admin/appointments"
+							},
+							"response": []
+						},
+						{
+							"name": "/admin/appointments/id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "5|BsdVupbgmw0tssVUgGhJ8PRYo1xzr9rSGxlOHQ9Kdefc3857"
+									}
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "accept/json",
+										"type": "text"
+									}
+								],
+								"url": "{{baseURL}}/api/admin/appointments/11"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "/user/time-slots",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{userToken}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "accept/json",
+								"type": "text"
+							}
+						],
+						"url": "{{baseURL}}/api/user/time-slots"
+					},
+					"response": []
+				},
+				{
+					"name": "/time-slots",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "accept/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"slot_id\":\"7946\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/time-slots"
+					},
+					"response": []
+				},
+				{
+					"name": "/appointments",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{userToken}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "accept/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"slot_id\":\"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseURL}}/api/appointments"
+					},
+					"response": []
+				},
+				{
+					"name": "/appointments/id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{userToken}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "accept/json",
+								"type": "text"
+							}
+						],
+						"url": "{{baseURL}}/api/appointments/14"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": ""
+		},
+		{
+			"key": "adminToken",
+			"value": ""
+		},
+		{
+			"key": "userToken",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
