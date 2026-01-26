@@ -9,7 +9,7 @@ import axios from 'axios'
 import Toast, { POSITION } from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 
-axios.defaults.baseURL = 'https://clinic-appointment-system.test/api/' // Backend URL
+axios.defaults.baseURL = 'http://127.0.0.1:8001/api/' // Backend URL
 axios.defaults.withCredentials = true
 
 const token = localStorage.getItem('token')
